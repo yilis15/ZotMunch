@@ -163,39 +163,35 @@
         ⌄
        </span>
       </button>
+      <!-- Swipe experience: hint, dish card, and actions are separate regions. -->
       <div id="swipeArea">
-       <div class="panel dish-card" id="gestureCard">
-        <div class="photo-slot" id="dishPhoto" style="height:254px">
+       <p class="swipe-hint">← Skip&nbsp;&nbsp; · &nbsp;&nbsp;Tap for details&nbsp;&nbsp; · &nbsp;&nbsp;Want it →</p>
+
+       <article class="dish-card" id="gestureCard" aria-label="Current dish">
+        <div class="photo-slot dish-photo" id="dishPhoto">
          Dish photo placeholder
         </div>
-        <div class="meta">
-         <div class="section-title">
-          <h2 id="dishName">
-           Mapo tofu
-          </h2>
-          <span class="pill" id="dishPrice">
-          </span>
+
+        <div class="dish-card-body">
+         <h2 id="dishName">Mapo tofu</h2>
+         <p class="dish-restaurant" id="dishRestaurant"></p>
+         <p class="dish-social" id="dishSocial">♥ Loved by 300 Anteaters</p>
+
+         <div class="dish-card-footer">
+          <div class="dish-tags">
+           <span class="dish-tag">♨</span>
+           <span class="dish-tag">Comfort food</span>
+          </div>
+          <span class="dish-price" id="dishPrice"></span>
          </div>
-         <p id="dishRestaurant" style="font-weight:800;font-size:15px">
-         </p>
-         <p class="small muted" id="dishInfo">
-         </p>
         </div>
-        <div class="actions">
-         <button class="btn soft" data-action="skip">
-          Skip ←
-         </button>
-         <button class="btn outline" data-action="details">
-          View dish
-         </button>
-         <button class="btn gold" data-action="want" id="wantButton">
-          Want it ♥
-         </button>
-        </div>
+       </article>
+
+       <div class="swipe-actions" aria-label="Dish actions">
+        <button class="btn outline" data-action="skip">× Skip</button>
+        <button class="btn soft" data-action="details">View dish</button>
+        <button class="btn gold" data-action="want" id="wantButton">♥ Want it</button>
        </div>
-       <p class="swipe-hint">
-        Swipe left to skip · Swipe right to save
-       </p>
       </div>
       <div id="feedArea" style="display:none">
       </div>

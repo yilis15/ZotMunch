@@ -78,13 +78,15 @@ function toggleChoice(key, v) {
     } renderChoices();
 }
 function renderDiscover() {
-    const arr = activeDishes(); const swipe = state.mode === 'swipe'; $('swipeMode').classList.toggle('selected', swipe); $('feedMode').classList.toggle('selected', !swipe); $('swipeArea').style.display = swipe ? 'block' : 'none'; $('feedArea').style.display = swipe ? 'none' : 'flex'; $('feedArea').style.flexDirection = 'column'; $('feedArea').style.gap = '10px'; let filters = state.filters; $('filterCount').textContent = filters.type === 'All' && filters.budget === 40 && filters.distance === 15 ? '' : '· ' + [filters.type !== 'All', filters.budget !== 40, filters.distance !== 15].filter(Boolean).length; if (!arr.length) {
+    const arr = activeDishes(); const swipe = state.mode === 'swipe'; $('swipeMode').classList.toggle('selected', swipe); $('feedMode').classList.toggle('selected', !swipe); $('swipeArea').style.display = swipe ? 'flex' : 'none'; $('feedArea').style.display = swipe ? 'none' : 'flex'; $('feedArea').style.flexDirection = 'column'; $('feedArea').style.gap = '10px'; let filters = state.filters; $('filterCount').textContent = filters.type === 'All' && filters.budget === 40 && filters.distance === 15 ? '' : '· ' + [filters.type !== 'All', filters.budget !== 40, filters.distance !== 15].filter(Boolean).length; if (!arr.length) {
         $('gestureCard').style.display = 'none';
+        document.querySelector('.swipe-actions').style.display = 'none';
         $('feedArea').innerHTML = '<div class="panel empty"><div class="icon-slot">No-match illustration placeholder</div><h2>No bites found.</h2><p class="small muted" style="margin:12px 0">Try relaxing your filters.</p><button class="btn blue" data-action="openFilters">Adjust filters</button></div>';
         $('swipeArea').querySelector('.swipe-hint').textContent = 'No matches · Adjust filters';
         renderNav();
         return;
-    } $('gestureCard').style.display = 'block'; $('swipeArea').querySelector('.swipe-hint').textContent = 'Swipe left to skip · Swipe right to save'; state.index = state.index % arr.length; const d = arr[state.index]; $('dishName').textContent = d.name; $('dishPrice').textContent = '$' + d.price; $('dishRestaurant').textContent = d.restaurant + ' · ' + d.location; $('dishInfo').textContent = d.distance.toFixed(1) + ' mi away · ' + d.kind; $('dishPhoto').textContent = d.name + ' photo placeholder'; $('wantButton').textContent = state.saved[d.id] ? 'Saved ✓' : 'Want it ♥'; $('feedArea').innerHTML = arr.map(d => `<div class="feed-dish"><div class="photo-slot">Dish photo<br>placeholder</div><div class="details"><strong>${d.name}</strong><p>${d.restaurant}</p><p>$${d.price} · ${d.distance.toFixed(1)} mi</p><button class="want-mini" data-action="feedWant" data-id="${d.id}">${state.saved[d.id] ? 'Saved ✓' : 'Want it ♥'}</button> <button class="want-mini" style="background:var(--sky);color:var(--blue)" data-action="feedDetails" data-id="${d.id}">Details</button></div></div>`).join(''); renderNav();
+    } $('gestureCard').style.display = 'block';
+    document.querySelector('.swipe-actions').style.display = 'grid'; $('swipeArea').querySelector('.swipe-hint').textContent = '← Skip   ·   Tap for details   ·   Want it →'; state.index = state.index % arr.length; const d = arr[state.index]; $('dishName').textContent = d.name; $('dishPrice').textContent = '$' + Number(d.price).toFixed(2); $('dishRestaurant').textContent = d.restaurant + ' · ' + d.location; $('dishSocial').textContent = '♥ Loved by 300 Anteaters'; $('dishPhoto').textContent = d.name + ' photo placeholder'; $('wantButton').textContent = state.saved[d.id] ? 'Saved ✓' : '♥ Want it'; $('feedArea').innerHTML = arr.map(d => `<div class="feed-dish"><div class="photo-slot">Dish photo<br>placeholder</div><div class="details"><strong>${d.name}</strong><p>${d.restaurant}</p><p>$${d.price} · ${d.distance.toFixed(1)} mi</p><button class="want-mini" data-action="feedWant" data-id="${d.id}">${state.saved[d.id] ? 'Saved ✓' : 'Want it ♥'}</button> <button class="want-mini" style="background:var(--sky);color:var(--blue)" data-action="feedDetails" data-id="${d.id}">Details</button></div></div>`).join(''); renderNav();
 }
 function advance() {
     const arr = activeDishes(); if (arr.length) {
@@ -227,8 +229,8 @@ document.querySelectorAll('.overlay').forEach(v => v.addEventListener('click', e
         closeOverlays();
 }));
 let startX = 0, startY = 0;
-$('swipeArea').addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
-$('swipeArea').addEventListener('touchend', e => {
+$('gestureCard').addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
+$('gestureCard').addEventListener('touchend', e => {
     let dx = e.changedTouches[0].clientX - startX, dy = e.changedTouches[0].clientY - startY; if (Math.abs(dx) > 75 && Math.abs(dx) > Math.abs(dy) * 1.4) {
         if (dx > 0) {
             let arr = activeDishes();

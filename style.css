@@ -649,6 +649,118 @@ h2 {
     margin:5px 0
 }
 
+
+/* Swipe screen: match the Figma ordering and separate the card from controls. */
+#swipeArea {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+#swipeArea .swipe-hint {
+    margin: 0;
+    text-align: center;
+    color: var(--blue);
+    font-size: 12px;
+    line-height: 17px;
+    white-space: nowrap;
+}
+
+#swipeArea .dish-card {
+    padding: 0;
+    overflow: hidden;
+    background: var(--paper);
+    border: 1.3px solid var(--ink);
+    border-radius: 26px;
+}
+
+#swipeArea .dish-photo {
+    height: 242px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+}
+
+.dish-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 14px 14px 13px;
+}
+
+.dish-card-body h2 {
+    font-size: 30px;
+    line-height: 34px;
+}
+
+.dish-restaurant {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.dish-social {
+    color: var(--blue);
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.dish-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 8px;
+    margin-top: 3px;
+}
+
+.dish-tags {
+    display: flex;
+    gap: 8px;
+}
+
+.dish-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 12px;
+    color: var(--ink);
+}
+
+.dish-price {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 90px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 18px;
+    background: var(--gold);
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.swipe-actions {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr 1.12fr;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.swipe-actions .btn {
+    height: 52px;
+    padding: 0 6px;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.swipe-actions .btn.soft {
+    border-color: var(--sky);
+}
+
 .desktop-note {
     max-width:390px;
     margin:20px auto;
