@@ -206,6 +206,138 @@
     <div class="bottom" id="discoverNav">
     </div>
    </div>
+
+    <!-- DISH DETAILS PAGE -->
+    <div class="view" id="detail">
+
+        <!-- Status Bar -->
+        <div class="status">
+            <span>9:41</span>
+            <span>▮▮▮ ◉ ▰</span>
+        </div>
+
+        <div class="scroller detail-scroller">
+            <div class="detail-content">
+
+                <!-- Page Header -->
+                <header class="detail-header">
+                    <button
+                        class="back"
+                        data-action="backFromDetail"
+                        aria-label="Go back"
+                    >
+                        ←
+                    </button>
+
+                    <h2>Dish details</h2>
+                </header>
+
+                <!-- Dish Photo -->
+                <div class="detail-photo" id="detailPhoto">
+                    Dish image placeholder
+                </div>
+
+                <!-- Dish Name -->
+                <h1 class="detail-dish-name" id="detailName">
+                    Mapo tofu
+                </h1>
+
+                <!-- Price and Spice -->
+                <div class="detail-badges">
+                    <span class="detail-price" id="detailPrice">
+                        $12.50
+                    </span>
+
+                    <span class="detail-spice" id="detailSpice">
+                        ♨
+                    </span>
+                </div>
+
+                <!-- Restaurant Information -->
+                <section class="detail-restaurant-card">
+
+                    <div class="detail-restaurant-heading">
+                        <span class="detail-location-icon">
+                            ♧
+                        </span>
+
+                        <div>
+                            <h2 id="detailRestaurant">
+                                Little Wok
+                            </h2>
+
+                            <p id="detailLocation">
+                                University Center · 0.7 mi
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="detail-restaurant-actions">
+                        <button
+                            class="btn outline"
+                            data-action="directions"
+                        >
+                            Directions
+                        </button>
+
+                        <button
+                            class="btn gold"
+                            data-action="otherDishes"
+                        >
+                            Other dishes
+                        </button>
+                    </div>
+
+                </section>
+
+                <!-- Want It -->
+                <button
+                    class="btn gold detail-want"
+                    data-action="wantDetail"
+                    id="detailWant"
+                >
+                    ❤️ Want it
+                </button>
+
+                <!-- Reviews -->
+                <section class="detail-reviews">
+
+                    <h2>Anteater reviews</h2>
+
+                    <div class="detail-review-card">
+
+                        <p class="detail-rating">
+                            <span class="detail-stars">
+                                ★★★★☆
+                            </span>
+
+                            <span>
+                                4.6 · 18 reviews
+                            </span>
+                        </p>
+
+                        <p class="detail-review-text">
+                            “Comfort food after a long lab.<br>
+                            A little spicy!”
+                        </p>
+
+                    </div>
+
+                </section>
+
+                <!-- Write a Review -->
+                <button
+                    class="btn blue detail-write-review"
+                    data-action="writeReview"
+                >
+                    Write a review
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+
    <div class="view" id="saved">
     <div class="status">
      <span>
@@ -342,40 +474,6 @@
      </footer>
     </div>
    </div>
-   <div class="overlay" id="detailsOverlay">
-    <div class="sheet">
-     <header>
-      <h2>
-       Dish details
-      </h2>
-      <button data-action="closeOverlay">
-       ✕
-      </button>
-     </header>
-     <div class="photo-slot large">
-      Dish image placeholder
-     </div>
-     <h2 id="detailName" style="margin-top:15px">
-     </h2>
-     <p id="detailRestaurant" style="margin-top:5px">
-     </p>
-     <p class="small muted" id="detailMeta" style="margin:8px 0">
-     </p>
-     <div class="panel" style="margin:15px 0">
-      <h2 style="margin-bottom:8px">
-       About this dish
-      </h2>
-      <p class="small muted">
-       Community review details are not yet populated in this prototype.
-      </p>
-     </div>
-     <button class="btn gold" data-action="wantDetail" id="detailWant">
-      Want it ♥
-     </button>
-     <button class="btn soft" data-action="closeOverlay" style="margin-top:10px">
-      Back to discovering
-     </button>
-    </div>
    </div>
    <div aria-live="polite" class="toast" id="toast" role="status">
    </div>

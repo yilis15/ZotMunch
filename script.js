@@ -303,10 +303,63 @@ function applyTemporaryFilters() {
     renderDiscover();
 }
 
+let detailReturnPage = 'discover';
+
 function showDetail(id) {
-    const d = dishes.find(x => x.id === id); if (!d)
-        return; state.detailId = id; $('detailName').textContent = d.name; $('detailRestaurant').textContent = d.restaurant + ' · ' + d.location; $('detailMeta').textContent = `$${d.price} · ${d.distance.toFixed(1)} mi · ${d.kind}`; $('detailWant').textContent = state.saved[id] ? 'Saved ✓' : 'Want it ♥'; openOverlay('details');
+    const dish = dishes.find(d => d.id === id);
+
+    if (!dish) {
+        return;
+    }
+
+    // Store selected dish and previous page.
+    state.detailId = id;
+    detailReturnPage = state.page;
+
+    // Dish information
+    $('detailName').textContent = dish.name;
+
+    $('detailPrice').textContent =
+        `$${dish.price.toFixed(2)}`;
+
+    $('detailRestaurant').textContent =
+        dish.restaurant;
+
+    $('detailLocation').textContent =
+        `${dish.location} · ${dish.distance.toFixed(1)} mi`;
+
+    // Dish image or placeholder
+    const photo = $('detailPhoto');
+
+    photo.replaceChildren();
+
+    if (dish.image) {
+        const img = document.createElement('img');
+
+        img.src = dish.image;
+        img.alt = dish.name;
+
+        photo.appendChild(img);
+    } else {
+        photo.textContent =
+            `${dish.name} photo placeholder`;
+    }
+
+    // Update saved status
+    $('detailWant').textContent = state.saved[id]
+        ? 'Saved ✓'
+        : '❤️ Want it';
+
+    // Show independent detail page
+    showPage('detail');
 }
+
+
+// Return to the previous page
+function backFromDetail() {
+    showPage(detailReturnPage);
+}
+
 document.addEventListener('click', e => {
     const b = e.target.closest('[data-action]'); if (!b)
         return; let a = b.dataset.action, id = b.dataset.id; switch (a) {
@@ -398,8 +451,9 @@ document.addEventListener('click', e => {
                 applyTemporaryFilters();
                 break;
             case 'wantDetail':
-                saveDish(state.detailId);
-                $('detailWant').textContent = 'Saved ✓';
+                if (state.detailId)
+                    saveDish(state.detailId);
+                    $('detailWant').textContent = 'Saved ✓';
                 break;
             case 'savedFilter':
                 state.savedFilter = b.dataset.filter;
@@ -409,6 +463,42 @@ document.addEventListener('click', e => {
                 state.saved[id].tried = !state.saved[id].tried;
                 persist('saved', state.saved);
                 renderSaved();
+                break;
+            case 'backFromDetail':
+                backFromDetail();
+                break;
+            case 'directions': {
+                const dish = dishes.find(
+                    d => d.id === state.detailId);
+                if (dish) {
+                    const query = [
+                        dish.restaurant,
+                        dish.location,
+                        'Irvine CA'
+                    ].join(' ');
+                    const mapUrl =
+                        'https://www.google.com/maps/search/?api=1&query=' +
+                        encodeURIComponent(query);
+                    window.open(mapUrl, '_blank', 'noopener,noreferrer');}
+                break;
+            }
+            case 'otherDishes': {
+                const dish = dishes.find(
+                    d => d.id === state.detailId);
+                if (!dish) {
+                    break;
+                }
+                state.mode = 'feed';
+                showPage('discover');
+                const search = $('feedSearch');
+                if (search) {
+                    search.value = dish.restaurant;
+                    search.dispatchEvent(
+                        new Event('input', { bubbles: true }));}
+                break;
+            }
+            case 'writeReview':
+                toast('Review posting is planned for a later build.');
                 break;
         }
 });
