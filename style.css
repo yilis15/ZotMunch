@@ -460,12 +460,19 @@ h2 {
     color:var(--blue)
 }
 
+
 .preferences-title {
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:2px 24px 0;
-    height:55px
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 0 24px;
+    height: 36px;
 }
 
 .back {
