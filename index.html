@@ -1,47 +1,388 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ZotMunch · A happy bite at UCI</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="stage">
-  <header class="intro">
-    <span class="eyebrow">IN4MATX 151 · Core mechanic prototype · interactive build · loop 1</span>
-    <h1><mark>ZotMunch</mark></h1>
-    <p>Scroll, drool, munch, repeat! An interactive vertical slice of our dish-first discovery loop for UCI students. Try both Swipe and Feed on the Discover screen. All dishes, restaurants and people here are sample prototype data; authentication and directions are simulated.</p>
-  </header>
-
-  <div class="layout">
-    <div class="phone" id="phone">
-      <div id="app"></div>
-      <div id="sheet" hidden></div>
-      <div class="toast" id="toast" hidden></div>
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <title>
+   ZotMunch · A happy bite at UCI
+  </title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&amp;family=Nunito+Sans:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+  <script defer src="script.js">
+  </script>
+ </head>
+ <body>
+  <div class="app" id="app">
+   <div class="view active" id="welcome">
+    <div class="hero">
+     <div class="hero-placeholder">
+      Anteater / pancake hero image placeholder
+     </div>
     </div>
-
-    <aside class="notes" aria-live="polite">
-      <div>
-        <div class="eyebrow" style="margin-bottom:6px">The core loop</div>
-        <div class="loop" id="loop"></div>
+    <div class="status light">
+     <span>
+      9:41
+     </span>
+     <span>
+      ▮▮▮ ◉ ▰
+     </span>
+    </div>
+    <div class="scroller welcome-scroll">
+     <div class="content welcome-content">
+      <div class="wordmark">
+       <span>
+        Zot
+       </span>
+       <span>
+        Munch
+       </span>
       </div>
-      <div class="sticky" id="note"></div>
-      <div class="tasks">
-        <h3>Test tasks for playtesters</h3>
-        <div id="tasks"></div>
+      <p style="font-size:15px;font-weight:800">
+       Scroll, drool, munch, repeat!
+      </p>
+      <p class="muted small">
+       Your next happy bite starts here.
+      </p>
+      <div style="height:6px">
       </div>
-      <div class="legend">
-        <h3>How to read this wireframe</h3>
-        <p>Emoji food images are prototype placeholders for the final Figma image assets. Gold marks primary actions. All dish, price and distance information is illustrative demo data, not verified business information.</p>
-        <button class="reset-link" id="resetAll">Restart the prototype from sign-in</button>
+      <button class="btn gold" data-action="start">
+       G　 Continue with Google
+      </button>
+      <div class="divider-text small muted">
+       or use email
       </div>
-    </aside>
+      <input autocomplete="email" class="email" id="email" placeholder="you@uci.edu" type="email"/>
+      <button class="btn outline" data-action="email">
+       Continue with email
+      </button>
+      <p class="small muted">
+       Prototype: sign-in is simulated; no account is created.
+      </p>
+     </div>
+    </div>
+   </div>
+   <div class="view" id="preferences">
+    <div class="status">
+     <span>
+      9:41
+     </span>
+     <span>
+      ▮▮▮ ◉ ▰
+     </span>
+    </div>
+    <div class="preferences-title">
+     <button class="back" data-action="welcome">
+      ←
+     </button>
+     <h2>
+      Everyday preferences
+     </h2>
+    </div>
+    <div class="scroller pref-scroller">
+     <div class="content">
+      <p class="muted" style="font-size:15px;line-height:21px">
+       Set your food preferences and allergies. We'll personalize your recommendations.
+      </p>
+      <div class="pref-block">
+       <div class="choice-heading">
+        <h2>
+         Dietary preferences
+        </h2>
+        <span class="small muted">
+         Select all that apply
+        </span>
+       </div>
+       <div class="choice-wrap" id="dietChoices">
+       </div>
+      </div>
+      <div class="pref-block">
+       <div class="choice-heading">
+        <h2>
+         Allergies
+        </h2>
+        <span class="small muted">
+         Select all that apply
+        </span>
+       </div>
+       <div class="choice-wrap" id="allergyChoices">
+       </div>
+      </div>
+      <p class="small muted">
+       Missing allergen information is marked as unknown.
+      </p>
+      <button class="btn blue" data-action="savePreferences">
+       Save preferences
+      </button>
+      <button class="small" data-action="skipPreferences" style="background:none;border:0;color:var(--muted);width:100%">
+       Set up later
+      </button>
+     </div>
+    </div>
+   </div>
+   <div class="view" id="discover">
+    <div class="status">
+     <span>
+      9:41
+     </span>
+     <span>
+      ▮▮▮ ◉ ▰
+     </span>
+    </div>
+    <div class="scroller">
+     <div class="content">
+      <div class="header-flex">
+       <div class="copy">
+        <p class="label">
+         ZOTMUNCH / DISCOVER
+        </p>
+        <h1 style="margin-top:4px">
+         A bite of surprise.
+        </h1>
+       </div>
+       <div class="icon-slot mascot">
+        Mascot / cookie
+       </div>
+      </div>
+      <div class="segmented">
+       <button class="selected" data-action="swipeMode" id="swipeMode">
+        Swipe
+       </button>
+       <button data-action="feedMode" id="feedMode">
+        Feed
+       </button>
+      </div>
+      <button class="filter-button" data-action="openFilters">
+       <span>
+        ☷　 Filters
+        <span id="filterCount">
+        </span>
+       </span>
+       <span>
+        ⌄
+       </span>
+      </button>
+      <div id="swipeArea">
+       <div class="panel dish-card" id="gestureCard">
+        <div class="photo-slot" id="dishPhoto" style="height:254px">
+         Dish photo placeholder
+        </div>
+        <div class="meta">
+         <div class="section-title">
+          <h2 id="dishName">
+           Mapo tofu
+          </h2>
+          <span class="pill" id="dishPrice">
+          </span>
+         </div>
+         <p id="dishRestaurant" style="font-weight:800;font-size:15px">
+         </p>
+         <p class="small muted" id="dishInfo">
+         </p>
+        </div>
+        <div class="actions">
+         <button class="btn soft" data-action="skip">
+          Skip ←
+         </button>
+         <button class="btn outline" data-action="details">
+          View dish
+         </button>
+         <button class="btn gold" data-action="want" id="wantButton">
+          Want it ♥
+         </button>
+        </div>
+       </div>
+       <p class="swipe-hint">
+        Swipe left to skip · Swipe right to save
+       </p>
+      </div>
+      <div id="feedArea" style="display:none">
+      </div>
+     </div>
+    </div>
+    <div class="bottom" id="discoverNav">
+    </div>
+   </div>
+   <div class="view" id="saved">
+    <div class="status">
+     <span>
+      9:41
+     </span>
+     <span>
+      ▮▮▮ ◉ ▰
+     </span>
+    </div>
+    <div class="scroller">
+     <div class="content">
+      <div class="header-flex">
+       <div class="copy">
+        <p class="label">
+         SAVED / YOUR NEXT STOPS
+        </p>
+        <h1 style="margin-top:4px">
+         A little list.
+         <br/>
+         A lot to munch.
+        </h1>
+       </div>
+       <div class="icon-slot mascot">
+        Mascot / mug
+       </div>
+      </div>
+      <div class="segmented" id="savedTabs">
+       <button class="selected" data-action="savedFilter" data-filter="all">
+        All
+       </button>
+       <button data-action="savedFilter" data-filter="notyet">
+        Not yet
+       </button>
+       <button data-action="savedFilter" data-filter="tried">
+        Tried it
+       </button>
+      </div>
+      <p class="muted small" id="savedCount">
+      </p>
+      <div id="savedList">
+      </div>
+     </div>
+    </div>
+    <div class="bottom" id="savedNav">
+    </div>
+   </div>
+   <div class="view" id="me">
+    <div class="status">
+     <span>
+      9:41
+     </span>
+     <span>
+      ▮▮▮ ◉ ▰
+     </span>
+    </div>
+    <div class="scroller">
+     <div class="content">
+      <p class="label">
+       ZOTMUNCH / ME
+      </p>
+      <h1>
+       Your food journey.
+      </h1>
+      <div class="panel">
+       <h2>
+        Food preferences
+       </h2>
+       <p class="muted small" style="margin:8px 0 15px">
+        Your everyday food preferences and allergies.
+       </p>
+       <button class="btn blue" data-action="editPreferences">
+        Edit preferences
+       </button>
+      </div>
+      <div class="panel">
+       <p class="muted">
+        Other profile features are outside this vertical slice.
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="bottom" id="meNav">
+    </div>
+   </div>
+   <div class="overlay" id="filtersOverlay">
+    <div class="sheet">
+     <header>
+      <h2>
+       Filters
+      </h2>
+      <button data-action="closeOverlay">
+       ✕
+      </button>
+     </header>
+     <p class="small muted" style="margin-bottom:15px">
+      Short-term filters for today's cravings.
+     </p>
+     <div class="pref-block">
+      <div class="choice-heading">
+       <h2>
+        Food type
+       </h2>
+      </div>
+      <div class="choice-wrap" id="filterTypes">
+      </div>
+     </div>
+     <div class="pref-block">
+      <div class="choice-heading">
+       <h2>
+        Budget
+       </h2>
+       <span class="small muted" id="budgetLabel">
+       </span>
+      </div>
+      <input class="range" id="budgetRange" max="40" min="5" step="5" type="range"/>
+     </div>
+     <div class="pref-block">
+      <div class="choice-heading">
+       <h2>
+        Distance
+       </h2>
+       <span class="small muted" id="distanceLabel">
+       </span>
+      </div>
+      <input class="range" id="distanceRange" max="15" min="1" step="1" type="range"/>
+     </div>
+     <div style="display:flex;gap:8px">
+      <button class="btn outline" data-action="clearFilters">
+       Clear
+      </button>
+      <button class="btn blue" data-action="applyFilters">
+       Apply filters
+      </button>
+     </div>
+    </div>
+   </div>
+   <div class="overlay" id="detailsOverlay">
+    <div class="sheet">
+     <header>
+      <h2>
+       Dish details
+      </h2>
+      <button data-action="closeOverlay">
+       ✕
+      </button>
+     </header>
+     <div class="photo-slot large">
+      Dish image placeholder
+     </div>
+     <h2 id="detailName" style="margin-top:15px">
+     </h2>
+     <p id="detailRestaurant" style="margin-top:5px">
+     </p>
+     <p class="small muted" id="detailMeta" style="margin:8px 0">
+     </p>
+     <div class="panel" style="margin:15px 0">
+      <h2 style="margin-bottom:8px">
+       About this dish
+      </h2>
+      <p class="small muted">
+       Community review details are not yet populated in this prototype.
+      </p>
+     </div>
+     <button class="btn gold" data-action="wantDetail" id="detailWant">
+      Want it ♥
+     </button>
+     <button class="btn soft" data-action="closeOverlay" style="margin-top:10px">
+      Back to discovering
+     </button>
+    </div>
+   </div>
+   <div aria-live="polite" class="toast" id="toast" role="status">
+   </div>
+   <div class="home-indicator">
+   </div>
   </div>
-</div>
-<script src="script.js"></script>
-</body>
+  <p class="desktop-note">
+   ZotMunch vertical slice · Mobile-first interactive prototype · 390 × 844 design reference
+  </p>
+ </body>
 </html>
+
