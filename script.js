@@ -238,7 +238,201 @@ function saveDish(id) {
     else
         toast('Already in your Saved list.'); renderDiscover();
 }
-function renderSaved() { const all = dishes.filter(d => state.saved[d.id]); const filtered = all.filter(d => state.savedFilter === 'all' || (state.savedFilter === 'tried' ? state.saved[d.id].tried : !state.saved[d.id].tried)); $('savedCount').textContent = `${new Set(all.map(d => d.restaurant)).size} spots saved  ·  ${all.filter(d => !state.saved[d.id].tried).length} still to try`; $('savedTabs').querySelectorAll('button').forEach(b => b.classList.toggle('selected', b.dataset.filter === state.savedFilter)); const groups = {}; filtered.forEach(d => (groups[d.restaurant] ??= []).push(d)); $('savedList').innerHTML = filtered.length ? Object.entries(groups).map(([rest, items]) => `<div class="panel restaurant"><h2>${rest}</h2><p class="small muted">${items[0].location}</p>${items.map(d => `<div class="saved-row"><div class="photo-slot mini">Photo</div><div class="saved-copy"><strong>${d.name}</strong><p>$${d.price} · ${d.distance.toFixed(1)} mi</p><p>${state.saved[d.id].tried ? 'Tried it ✓' : 'Not yet'}</p></div><button data-action="tried" data-id="${d.id}">${state.saved[d.id].tried ? 'Undo' : 'Tried it'}</button></div>`).join('')}</div>`).join('') : '<div class="panel empty"><div class="icon-slot">Saved empty-state illustration placeholder</div><h2>Nothing here yet.</h2><p class="small muted" style="margin:12px 0">Save a dish to start your delicious little list.</p><button class="btn blue" data-action="discover">Discover food</button></div>'; renderNav(); }
+function updateDetailWantButton(id) {
+    const isSaved = Boolean(state.saved[id]);
+
+    const heart = $('detailHeart');
+    const label = $('detailWantText');
+    const button = $('detailWant');
+
+    heart.textContent = isSaved ? '♥' : '♡';
+    heart.classList.toggle('is-saved', isSaved);
+
+    label.textContent = 'Want it';
+    button.setAttribute('aria-pressed', String(isSaved));
+}
+
+
+// Toggle between saved and unsaved
+function toggleSavedDish(id) {
+    if (!id) return;
+
+    if (state.saved[id]) {
+        // Remove from Saved List
+        delete state.saved[id];
+        toast('Removed from Saved.');
+    } else {
+        // Add to Saved List
+        state.saved[id] = {
+            tried: false
+        };
+        toast('Saved! Keep discovering.');
+    }
+
+    // Store the updated state
+    persist('saved', state.saved);
+
+    // Update all related views
+    updateDetailWantButton(id);
+    renderDiscover();
+    renderSaved();
+}
+function renderSaved() {
+
+    // Get all saved dishes
+    const allSavedDishes = dishes.filter(
+        dish => state.saved[dish.id]
+    );
+
+    // Filter by Tried / Not Yet status
+    const filteredDishes = allSavedDishes.filter(dish => {
+        if (state.savedFilter === 'all') {
+            return true;
+        }
+
+        const isTried = state.saved[dish.id].tried;
+
+        if (state.savedFilter === 'tried') {
+            return isTried;
+        }
+
+        return !isTried;
+    });
+
+    // Update saved count
+    const restaurantCount = new Set(
+        allSavedDishes.map(dish => dish.restaurant)
+    ).size;
+
+    const notYetCount = allSavedDishes.filter(
+        dish => !state.saved[dish.id].tried
+    ).length;
+
+    $('savedCount').textContent =
+        `${restaurantCount} spots saved · ${notYetCount} still to try`;
+
+    // Update tabs
+    $('savedTabs').querySelectorAll('button').forEach(button => {
+        button.classList.toggle(
+            'selected',
+            button.dataset.filter === state.savedFilter
+        );
+    });
+
+    // Group saved dishes by restaurant
+    const groups = {};
+    filteredDishes.forEach(dish => {
+        if (!groups[dish.restaurant]) {
+            groups[dish.restaurant] = [];
+        }
+        groups[dish.restaurant].push(dish);
+    });
+    // Empty state
+    if (filteredDishes.length === 0) {
+        $('savedList').innerHTML = `
+            <div class="panel empty">
+                <div class="icon-slot">
+                    Saved empty-state illustration placeholder
+                </div>
+                <h2>Nothing here yet.</h2>
+                <p class="small muted" style="margin:12px 0">
+                    Save a dish to start your delicious little list.
+                </p>
+                <button
+                    class="btn blue"
+                    data-action="discover"
+                >
+                    Discover food
+                </button>
+            </div>
+        `;
+        renderNav();
+        return;
+    }
+    // Render restaurant groups
+    $('savedList').innerHTML = Object.entries(groups)
+        .map(([restaurant, items]) => {
+            const dishCards = items.map(dish => {
+                const tried = state.saved[dish.id].tried;
+                return `
+                    <div class="saved-row">
+                        <!-- Clickable dish card -->
+                        <div
+                            class="saved-dish-card"
+                            data-action="savedDetails"
+                            data-id="${dish.id}"
+                            role="button"
+                            tabindex="0"
+                            aria-label="View ${dish.name} details"
+                        >
+                            <!-- Dish image -->
+                            <div class="photo-slot mini">
+                                Photo
+                            </div>
+                            <!-- Dish information -->
+                            <div class="saved-copy">
+                                <strong>
+                                    ${dish.name}
+                                </strong>
+                                <p>
+                                    $${dish.price.toFixed(2)}
+                                    · ${dish.distance.toFixed(1)} mi
+                                </p>
+                                <p class="saved-status">
+                                    ${tried ? 'Tried it ✓' : 'Not yet'}
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Delete saved dish -->
+                        <button
+                            class="saved-delete"
+                            data-action="removeSaved"
+                            data-id="${dish.id}"
+                            aria-label="Remove ${dish.name} from Saved"
+                            title="Remove from Saved"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                width="18"
+                                height="18"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                aria-hidden="true"
+                            >
+                                <path d="M3 6h18"/>
+                                <path d="M8 6V4h8v2"/>
+                                <path d="M5 6l1 15h12l1-15"/>
+                                <path d="M10 10v7"/>
+                                <path d="M14 10v7"/>
+                            </svg>
+                        </button>
+
+                        <!-- Tried It Button -->
+                        <button
+                            class="saved-tried-button"
+                            data-action="tried"
+                            data-id="${dish.id}"
+                        >
+                            ${tried ? 'Undo' : 'Tried it'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
+            return `
+                <div class="panel restaurant">
+                    <h2>${restaurant}</h2>
+                    <p class="small muted">
+                        ${items[0].location}
+                    </p>
+                    ${dishCards}
+                </div>
+            `;
+        }).join('');
+    renderNav();
+}
 function openOverlay(id) { $(id + 'Overlay').classList.add('show'); }
 function closeOverlays() { document.querySelectorAll('.overlay').forEach(x => x.classList.remove('show')); }
 // ==========================================
@@ -346,10 +540,7 @@ function showDetail(id) {
     }
 
     // Update saved status
-    $('detailWant').textContent = state.saved[id]
-        ? 'Saved ✓'
-        : '❤️ Want it';
-
+    updateDetailWantButton(id);
     // Show independent detail page
     showPage('detail');
 }
@@ -451,9 +642,7 @@ document.addEventListener('click', e => {
                 applyTemporaryFilters();
                 break;
             case 'wantDetail':
-                if (state.detailId)
-                    saveDish(state.detailId);
-                    $('detailWant').textContent = 'Saved ✓';
+                toggleSavedDish(state.detailId);
                 break;
             case 'savedFilter':
                 state.savedFilter = b.dataset.filter;
@@ -463,6 +652,17 @@ document.addEventListener('click', e => {
                 state.saved[id].tried = !state.saved[id].tried;
                 persist('saved', state.saved);
                 renderSaved();
+                break;
+            case 'savedDetails':
+                showDetail(id);
+                break;
+            case 'removeSaved':
+                if (state.saved[id])
+                    delete state.saved[id];
+                    persist('saved', state.saved);
+                    renderSaved();
+                    renderDiscover();
+                    toast('Removed from Saved.');
                 break;
             case 'backFromDetail':
                 backFromDetail();
@@ -506,11 +706,16 @@ $('feedSearch').addEventListener('input', event => {
     state.feedQuery = event.target.value;
     renderFeedCards();
 });
-$('feedArea').addEventListener('keydown', event => {
-    if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('.feed-feature-card')) {
-        event.preventDefault();
-        showDetail(event.target.dataset.id);
+document.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+        return;
     }
+    const card = event.target.closest(
+        '[data-action="savedDetails"], [data-action="feedDetails"]'
+    );
+    if (!card) return;
+    event.preventDefault();
+    showDetail(card.dataset.id);
 });
 document.querySelectorAll('.overlay').forEach(v => v.addEventListener('click', e => {
     if (e.target === v)
