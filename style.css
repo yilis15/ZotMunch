@@ -460,19 +460,12 @@ h2 {
     color:var(--blue)
 }
 
-
 .preferences-title {
-    position: absolute;
-    top: 52px;
-    left: 0;
-    right: 0;
-
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    padding: 0 24px;
-    height: 36px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:2px 24px 0;
+    height:55px
 }
 
 .back {
@@ -996,4 +989,194 @@ h2 {
 
 #feedSearch::placeholder {
     color: var(--muted);
+}
+
+
+/* ==========================================
+   Temporary filters / Figma screen 06
+   Scoped to the filters dialog only.
+========================================== */
+#filtersOverlay {
+    background: rgba(0, 34, 68, 0.32);
+    align-items: flex-end;
+}
+
+#filtersOverlay .filter-sheet {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    width: 100%;
+    height: calc(100% - 72px);
+    max-height: calc(100% - 72px);
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--cream);
+    border-radius: 28px 28px 0 0;
+}
+
+.filter-sheet-handle {
+    flex-shrink: 0;
+    width: 62px;
+    height: 4px;
+    margin: 10px auto 12px;
+    border-radius: 99px;
+    background: var(--line);
+}
+
+#filtersOverlay .filter-sheet-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 0 24px 0;
+    margin: 0 0 20px;
+    flex-shrink: 0;
+}
+
+.filter-sheet-header h2 {
+    font-size: 30px;
+    line-height: 34px;
+    font-weight: 600;
+}
+
+.filter-subtitle {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 17px;
+}
+
+#filtersOverlay .filter-close {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.filter-sheet-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 24px 18px;
+    scrollbar-width: none;
+}
+
+.filter-sheet-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+}
+
+.filter-section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.filter-section-title h3 {
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 21px;
+}
+
+.filter-section-title span {
+    font-size: 12px;
+    line-height: 17px;
+    white-space: nowrap;
+    color: var(--muted);
+}
+
+.filter-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 13px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 17px;
+    color: var(--ink);
+    white-space: nowrap;
+}
+
+.filter-chip.selected {
+    background: var(--blue);
+    color: var(--paper);
+    border-color: var(--blue);
+}
+
+.filter-chip:focus-visible,
+.filter-close:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+}
+
+.filter-sheet-footer {
+    flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 12px 24px 34px;
+    border-top: 1px solid var(--line);
+    background: var(--cream);
+}
+
+.filter-sheet-footer .btn {
+    height: 52px;
+    white-space: nowrap;
+}
+
+.filter-sheet-footer .btn.outline {
+    flex: 0 0 96px;
+    padding: 0 8px;
+}
+
+.filter-sheet-footer .btn.gold {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-height: 650px) {
+    #filtersOverlay .filter-sheet {
+        height: calc(100% - 45px);
+        max-height: calc(100% - 45px);
+    }
+}
+
+/* Home indicator remains visible on top of the temporary-filter sheet. */
+#filtersOverlay .filter-sheet::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    left: calc(50% - 54px);
+    width: 108px;
+    height: 4px;
+    background: var(--ink);
+    border-radius: 4px;
+    pointer-events: none;
 }

@@ -4,6 +4,9 @@
 const dishes = [
     {
         id: 'pancake',
+        cuisine: 'American',
+        foodType: 'Dessert',
+        flavor: 'Sweet',
         name: 'Golden pancake stack',
         restaurant: 'Bluebird Café',
         location: 'Campus Plaza',
@@ -14,6 +17,9 @@ const dishes = [
     },
     {
         id: 'tofu',
+        cuisine: 'Chinese',
+        foodType: 'Rice',
+        flavor: 'Spicy',
         name: 'Mapo tofu',
         restaurant: 'Little Wok',
         location: 'University Center',
@@ -24,6 +30,9 @@ const dishes = [
     },
     {
         id: 'ramen',
+        cuisine: 'Japanese',
+        foodType: 'Noodles',
+        flavor: 'Savory',
         name: 'Cozy miso ramen',
         restaurant: 'Noodle Club',
         location: 'Campus Plaza',
@@ -34,6 +43,9 @@ const dishes = [
     },
     {
         id: 'toast',
+        cuisine: 'American',
+        foodType: 'Sandwich',
+        flavor: 'Light & Fresh',
         name: 'Avocado toast',
         restaurant: 'Bluebird Café',
         location: 'Campus Plaza',
@@ -44,6 +56,9 @@ const dishes = [
     },
     {
         id: 'noodle',
+        cuisine: 'Chinese',
+        foodType: 'Noodles',
+        flavor: 'Savory',
         name: 'Garlic noodles',
         restaurant: 'Little Wok',
         location: 'University Center',
@@ -63,10 +78,46 @@ const read = (k, fallback) => {
         return fallback;
     }
 };
-const state = { page: 'welcome', mode: 'swipe', index: 1, feedQuery: '', saved: read('saved', {}), diet: read('diet', []), allergies: read('allergies', []), filters: read('filters', { type: 'All', budget: 40, distance: 15 }), savedFilter: 'all', detailId: null, editing: false };
+const filterDefaults = () => ({ cuisine: [], foodType: [], flavor: [], budget: [] });
+
+function normalizeFilters(value) {
+    const result = filterDefaults();
+    for (const key of Object.keys(result)) {
+        result[key] = Array.isArray(value?.[key]) ? value[key] : [];
+    }
+    return result;
+}
+
+const state = {
+    page: 'welcome', mode: 'swipe', index: 1, feedQuery: '',
+    saved: read('saved', {}), diet: read('diet', []), allergies: read('allergies', []),
+    filters: normalizeFilters(read('filters', filterDefaults())),
+    savedFilter: 'all', detailId: null, editing: false
+};
+let draftFilters = filterDefaults();
 const persist = (k, v) => localStorage.setItem('zm_' + k, JSON.stringify(v));
 const $ = id => document.getElementById(id);
-const activeDishes = () => dishes.filter(d => (state.filters.type === 'All' || d.kind === state.filters.type) && d.price <= state.filters.budget && d.distance <= state.filters.distance);
+// Within each filter group: OR. Across groups: AND. Empty group: no restriction.
+const budgetMatches = (price, selected) => selected.length === 0 || selected.some(band => {
+    if (band === '$1–20') return price >= 1 && price <= 20;
+    if (band === '$20–50') return price > 20 && price <= 50;
+    if (band === '$50+') return price > 50;
+    return false;
+});
+
+function activeDishes() {
+    const filters = state.filters;
+    return dishes.filter(dish =>
+        (filters.cuisine.length === 0 || filters.cuisine.includes(dish.cuisine)) &&
+        (filters.foodType.length === 0 || filters.foodType.includes(dish.foodType)) &&
+        (filters.flavor.length === 0 || filters.flavor.includes(dish.flavor)) &&
+        budgetMatches(dish.price, filters.budget)
+    );
+}
+
+function filterSelectionCount() {
+    return Object.values(state.filters).reduce((total, values) => total + values.length, 0);
+}
 function showPage(page) {
     state.page = page; document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === page)); if (page === 'discover')
         renderDiscover(); if (page === 'saved')
@@ -146,7 +197,7 @@ function renderDiscover() {
     $('discoverMascot').textContent = swipe ? 'Mascot / cookie' : 'Mascot / stamp';
 
     const filters = state.filters;
-    const count = [filters.type !== 'All', filters.budget !== 40, filters.distance !== 15].filter(Boolean).length;
+    const count = filterSelectionCount();
     $('filterCount').textContent = count ? '· ' + count : '';
 
     renderFeedCards();
@@ -190,8 +241,68 @@ function saveDish(id) {
 function renderSaved() { const all = dishes.filter(d => state.saved[d.id]); const filtered = all.filter(d => state.savedFilter === 'all' || (state.savedFilter === 'tried' ? state.saved[d.id].tried : !state.saved[d.id].tried)); $('savedCount').textContent = `${new Set(all.map(d => d.restaurant)).size} spots saved  ·  ${all.filter(d => !state.saved[d.id].tried).length} still to try`; $('savedTabs').querySelectorAll('button').forEach(b => b.classList.toggle('selected', b.dataset.filter === state.savedFilter)); const groups = {}; filtered.forEach(d => (groups[d.restaurant] ??= []).push(d)); $('savedList').innerHTML = filtered.length ? Object.entries(groups).map(([rest, items]) => `<div class="panel restaurant"><h2>${rest}</h2><p class="small muted">${items[0].location}</p>${items.map(d => `<div class="saved-row"><div class="photo-slot mini">Photo</div><div class="saved-copy"><strong>${d.name}</strong><p>$${d.price} · ${d.distance.toFixed(1)} mi</p><p>${state.saved[d.id].tried ? 'Tried it ✓' : 'Not yet'}</p></div><button data-action="tried" data-id="${d.id}">${state.saved[d.id].tried ? 'Undo' : 'Tried it'}</button></div>`).join('')}</div>`).join('') : '<div class="panel empty"><div class="icon-slot">Saved empty-state illustration placeholder</div><h2>Nothing here yet.</h2><p class="small muted" style="margin:12px 0">Save a dish to start your delicious little list.</p><button class="btn blue" data-action="discover">Discover food</button></div>'; renderNav(); }
 function openOverlay(id) { $(id + 'Overlay').classList.add('show'); }
 function closeOverlays() { document.querySelectorAll('.overlay').forEach(x => x.classList.remove('show')); }
-function renderFilterControls() { const t = ['All', 'Chinese', 'Japanese', 'Cafe']; $('filterTypes').innerHTML = t.map(v => `<button class="chip ${state.filters.type === v ? 'selected' : ''}" data-action="type" data-value="${v}">${v}</button>`).join(''); $('budgetRange').value = state.filters.budget; $('distanceRange').value = state.filters.distance; updateRange(); }
-function updateRange() { $('budgetLabel').textContent = 'Up to $' + $('budgetRange').value; $('distanceLabel').textContent = 'Within ' + $('distanceRange').value + ' mi'; }
+// ==========================================
+// Temporary filters — Figma screen 06
+// ==========================================
+const filterOptions = {
+    cuisine: ['Japanese', 'Taiwanese', 'Mexican', 'Vietnamese', 'Korean',
+        'Hawaiian', 'Middle Eastern', 'Italian', 'Chinese', 'Indian',
+        'Filipino', 'Thai'],
+    foodType: ['Rice', 'Noodles', 'Hot pot', 'Dumplings', 'Tacos',
+        'Pizza', 'Sandwich', 'Dessert', 'Drinks'],
+    flavor: ['Spicy', 'Sweet', 'Sour', 'Savory', 'Light & Fresh'],
+    budget: ['$1–20', '$20–50', '$50+']
+};
+
+const filterContainers = {
+    cuisine: 'filterCuisines',
+    foodType: 'filterFoodTypes',
+    flavor: 'filterFlavors',
+    budget: 'filterBudgets'
+};
+
+function renderFilterControls() {
+    Object.entries(filterOptions).forEach(([group, options]) => {
+        $(filterContainers[group]).innerHTML = options.map(option => {
+            const selected = draftFilters[group].includes(option);
+            return `<button type="button" class="filter-chip${selected ? ' selected' : ''}"
+                data-action="toggleFilter" data-group="${group}"
+                data-value="${option}" aria-pressed="${selected}">${option}</button>`;
+        }).join('');
+    });
+}
+
+function toggleDraftFilter(group, value) {
+    if (!Object.prototype.hasOwnProperty.call(filterOptions, group)) return;
+    if (!filterOptions[group].includes(value)) return;
+
+    const selections = draftFilters[group];
+    draftFilters[group] = selections.includes(value)
+        ? selections.filter(item => item !== value)
+        : [...selections, value];
+    renderFilterControls();
+}
+
+function openTemporaryFilters() {
+    // Closing the sheet without pressing Show dishes discards draft changes.
+    draftFilters = structuredClone(state.filters);
+    renderFilterControls();
+    openOverlay('filters');
+}
+
+function clearTemporaryFilters() {
+    draftFilters = filterDefaults();
+    renderFilterControls();
+}
+
+function applyTemporaryFilters() {
+    state.filters = structuredClone(draftFilters);
+    persist('filters', state.filters);
+    state.index = 0;
+    closeOverlays();
+    renderDiscover();
+}
+
 function showDetail(id) {
     const d = dishes.find(x => x.id === id); if (!d)
         return; state.detailId = id; $('detailName').textContent = d.name; $('detailRestaurant').textContent = d.restaurant + ' · ' + d.location; $('detailMeta').textContent = `$${d.price} · ${d.distance.toFixed(1)} mi · ${d.kind}`; $('detailWant').textContent = state.saved[id] ? 'Saved ✓' : 'Want it ♥'; openOverlay('details');
@@ -272,27 +383,19 @@ document.addEventListener('click', e => {
                 $('feedSearch').focus();
                 break;
             case 'openFilters':
-                renderFilterControls();
-                openOverlay('filters');
+                openTemporaryFilters();
                 break;
             case 'closeOverlay':
                 closeOverlays();
                 break;
-            case 'type':
-                state.filters.type = b.dataset.value;
-                renderFilterControls();
+            case 'toggleFilter':
+                toggleDraftFilter(b.dataset.group, b.dataset.value);
                 break;
             case 'clearFilters':
-                state.filters = { type: 'All', budget: 40, distance: 15 };
-                renderFilterControls();
+                clearTemporaryFilters();
                 break;
             case 'applyFilters':
-                state.filters.budget = +$('budgetRange').value;
-                state.filters.distance = +$('distanceRange').value;
-                persist('filters', state.filters);
-                state.index = 0;
-                closeOverlays();
-                renderDiscover();
+                applyTemporaryFilters();
                 break;
             case 'wantDetail':
                 saveDish(state.detailId);
@@ -309,8 +412,6 @@ document.addEventListener('click', e => {
                 break;
         }
 });
-$('budgetRange').addEventListener('input', updateRange);
-$('distanceRange').addEventListener('input', updateRange);
 $('feedSearch').addEventListener('input', event => {
     state.feedQuery = event.target.value;
     renderFeedCards();
