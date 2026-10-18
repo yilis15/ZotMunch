@@ -796,3 +796,197 @@ h2 {
         top:39%
     }
 }
+
+/* =========================
+   Discover / Feed (Figma)
+   ========================= */
+
+#feedSearchDock[hidden] {
+    display: none;
+}
+
+#discover.feed-mode .discover-scroller {
+    bottom: 150px;
+}
+
+#discover.feed-mode .header-flex {
+    min-height: 104px;
+}
+
+#discover.feed-mode #discoverHeading {
+    max-width: 255px;
+    font-size: 30px;
+    line-height: 34px;
+}
+
+#discover.feed-mode #discoverMascot {
+    width: 64px;
+    height: 64px;
+    border-radius: 0;
+}
+
+.feed-area {
+    flex-direction: column;
+    gap: 12px;
+}
+
+.feed-section-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.feed-section-heading h2 {
+    font-size: 22px;
+    line-height: 27px;
+}
+
+.feed-see-all {
+    border: 0;
+    background: none;
+    padding: 5px 0;
+    color: var(--blue);
+    font-size: 12px;
+}
+
+.feed-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.feed-feature-card {
+    overflow: hidden;
+    border: 1.3px solid var(--ink);
+    border-radius: 26px;
+    background: var(--paper);
+    cursor: pointer;
+}
+
+.feed-feature-card:focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
+
+.feed-feature-photo {
+    height: 190px;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    border-radius: 0;
+    font-size: 12px;
+}
+
+.feed-feature-body {
+    padding: 14px 14px 11px;
+}
+
+.feed-feature-body h3 {
+    font-size: 22px;
+    line-height: 27px;
+    margin-bottom: 3px;
+}
+
+.feed-feature-location {
+    font-size: 12px;
+    line-height: 17px;
+    color: var(--muted);
+}
+
+.feed-feature-loved {
+    color: var(--blue);
+    font-size: 12px;
+    line-height: 17px;
+}
+
+.feed-feature-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 9px;
+}
+
+.feed-feature-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0 17px;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.feed-feature-price {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+    height: 44px;
+    padding: 0 12px;
+    border-radius: 18px;
+    background: var(--gold);
+    font-size: 20px;
+    line-height: 26px;
+}
+
+.feed-search-dock {
+    position: absolute;
+    bottom: 82px;
+    height: 69px;
+    width: 100%;
+    padding: 10px 24px 12px;
+    background: var(--cream);
+    z-index: 2;
+}
+
+.feed-search-field {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 1.3px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
+}
+
+.feed-search-icon {
+    position: relative;
+    display: block;
+    width: 17px;
+    height: 17px;
+    flex: none;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+}
+
+.feed-search-icon::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    top: 14px;
+    left: 12px;
+    border-radius: 1px;
+    transform: rotate(47deg);
+    background: var(--ink);
+}
+
+#feedSearch {
+    width: 100%;
+    min-width: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    font-size: 15px;
+    color: var(--ink);
+}
+
+#feedSearch::placeholder {
+    color: var(--muted);
+}

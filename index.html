@@ -130,18 +130,18 @@
       ▮▮▮ ◉ ▰
      </span>
     </div>
-    <div class="scroller">
+    <div class="scroller discover-scroller">
      <div class="content">
       <div class="header-flex">
        <div class="copy">
         <p class="label">
          ZOTMUNCH / DISCOVER
         </p>
-        <h1 style="margin-top:4px">
+        <h1 id="discoverHeading" style="margin-top:4px">
          A bite of surprise.
         </h1>
        </div>
-       <div class="icon-slot mascot">
+       <div class="icon-slot mascot" id="discoverMascot">
         Mascot / cookie
        </div>
       </div>
@@ -193,9 +193,15 @@
         <button class="btn gold" data-action="want" id="wantButton">♥ Want it</button>
        </div>
       </div>
-      <div id="feedArea" style="display:none">
-      </div>
+      <section id="feedArea" class="feed-area" style="display:none" aria-label="Popular dishes">
+      </section>
      </div>
+    </div>
+    <div class="feed-search-dock" id="feedSearchDock" hidden>
+     <label class="feed-search-field">
+      <span class="feed-search-icon" aria-hidden="true"></span>
+      <input id="feedSearch" type="search" placeholder="Dish, restaurant, or craving" aria-label="Search dishes or restaurants" autocomplete="off"/>
+     </label>
     </div>
     <div class="bottom" id="discoverNav">
     </div>

@@ -3,6 +3,16 @@
 // Sample dish data used by the prototype. Replace with API responses later.
 const dishes = [
     {
+        id: 'pancake',
+        name: 'Golden pancake stack',
+        restaurant: 'Bluebird Café',
+        location: 'Campus Plaza',
+        price: 12.50,
+        distance: 0.4,
+        kind: 'Cafe',
+        desc: 'Golden pancakes with a little sweetness.'
+    },
+    {
         id: 'tofu',
         name: 'Mapo tofu',
         restaurant: 'Little Wok',
@@ -53,7 +63,7 @@ const read = (k, fallback) => {
         return fallback;
     }
 };
-const state = { page: 'welcome', mode: 'swipe', index: 0, saved: read('saved', {}), diet: read('diet', []), allergies: read('allergies', []), filters: read('filters', { type: 'All', budget: 40, distance: 15 }), savedFilter: 'all', detailId: null, editing: false };
+const state = { page: 'welcome', mode: 'swipe', index: 1, feedQuery: '', saved: read('saved', {}), diet: read('diet', []), allergies: read('allergies', []), filters: read('filters', { type: 'All', budget: 40, distance: 15 }), savedFilter: 'all', detailId: null, editing: false };
 const persist = (k, v) => localStorage.setItem('zm_' + k, JSON.stringify(v));
 const $ = id => document.getElementById(id);
 const activeDishes = () => dishes.filter(d => (state.filters.type === 'All' || d.kind === state.filters.type) && d.price <= state.filters.budget && d.distance <= state.filters.distance);
@@ -66,7 +76,7 @@ function showPage(page) {
         scroll.scrollTop = 0;
 }
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); }
-function navHTML(page) { return [['discover', 'Discover'], ['saved', 'Saved'], ['post', 'Post'], ['me', 'Me']].map(([id, name]) => `<button class="nav-item ${page === id ? 'active' : ''}" data-action="nav" data-page="${id}"><span class="nav-icon">${id === 'discover' ? '◇' : id === 'saved' ? '♡' : id === 'post' ? '+' : '○'}</span>${name}</button>`).join(''); }
+function navHTML(page) { return [['discover', 'Discover'], ['post', 'Post'], ['saved', 'Saved'], ['me', 'Me']].map(([id, name]) => `<button class="nav-item ${page === id ? 'active' : ''}" data-action="nav" data-page="${id}"><span class="nav-icon">${id === 'discover' ? '◇' : id === 'saved' ? '♡' : id === 'post' ? '+' : '○'}</span>${name}</button>`).join(''); }
 function renderNav() { ['discover', 'saved', 'me'].forEach(id => $(id + 'Nav').innerHTML = navHTML(state.page)); }
 function renderChoices() { const groups = [['dietChoices', 'diet', ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten-free', 'Dairy-free', 'No restrictions']], ['allergyChoices', 'allergies', ['Milk', 'Eggs', 'Fish', 'Shellfish', 'Peanuts', 'Tree nuts', 'Wheat', 'Soy', 'Sesame', 'No allergies']]]; groups.forEach(([target, key, values]) => $(target).innerHTML = values.map(v => `<button class="chip ${state[key].includes(v) ? 'selected' : ''}" data-action="choice" data-kind="${key}" data-value="${v}">${v}</button>`).join('')); }
 function toggleChoice(key, v) {
@@ -77,16 +87,90 @@ function toggleChoice(key, v) {
         state[key] = state[key].includes(v) ? state[key].filter(x => x !== v) : [...state[key], v];
     } renderChoices();
 }
+// Feed cards follow the Figma layout. Tapping the card opens its details.
+function renderFeedCards() {
+    const query = state.feedQuery.trim().toLowerCase();
+    const filtered = activeDishes().filter(d =>
+        `${d.name} ${d.restaurant} ${d.kind} ${d.desc}`.toLowerCase().includes(query)
+    );
+
+    const feedArea = $('feedArea');
+    if (!filtered.length) {
+        feedArea.innerHTML = `
+            <div class="panel empty">
+                <h2>No bites found.</h2>
+                <p class="small muted">Try another search or change your filters.</p>
+                <button class="btn blue" data-action="openFilters">Adjust filters</button>
+            </div>`;
+        return;
+    }
+
+    feedArea.innerHTML = `
+        <div class="feed-section-heading">
+            <h2>Popular with Anteaters</h2>
+            <button class="feed-see-all" data-action="seeAll">See all</button>
+        </div>
+        <div class="feed-card-list">
+            ${filtered.map(d => `
+                <article class="feed-feature-card" role="button" tabindex="0"
+                    data-action="feedDetails" data-id="${d.id}"
+                    aria-label="View details for ${d.name}">
+                    <div class="feed-feature-photo photo-slot">
+                        <span>${d.name} image placeholder</span>
+                    </div>
+                    <div class="feed-feature-body">
+                        <h3>${d.name}</h3>
+                        <p class="feed-feature-location">
+                            ${d.restaurant} · ${d.location} &nbsp; ${d.distance.toFixed(1)} mile
+                        </p>
+                        <p class="feed-feature-loved">♥ Loved by 300 Anteaters</p>
+                        <div class="feed-feature-footer">
+                            <span class="feed-feature-tag">${d.id === 'pancake' ? 'sweet' : d.kind}</span>
+                            <strong class="feed-feature-price">$${d.price.toFixed(2)}</strong>
+                        </div>
+                    </div>
+                </article>`).join('')}
+        </div>`;
+}
+
 function renderDiscover() {
-    const arr = activeDishes(); const swipe = state.mode === 'swipe'; $('swipeMode').classList.toggle('selected', swipe); $('feedMode').classList.toggle('selected', !swipe); $('swipeArea').style.display = swipe ? 'flex' : 'none'; $('feedArea').style.display = swipe ? 'none' : 'flex'; $('feedArea').style.flexDirection = 'column'; $('feedArea').style.gap = '10px'; let filters = state.filters; $('filterCount').textContent = filters.type === 'All' && filters.budget === 40 && filters.distance === 15 ? '' : '· ' + [filters.type !== 'All', filters.budget !== 40, filters.distance !== 15].filter(Boolean).length; if (!arr.length) {
+    const arr = activeDishes();
+    const swipe = state.mode === 'swipe';
+    $('swipeMode').classList.toggle('selected', swipe);
+    $('feedMode').classList.toggle('selected', !swipe);
+    $('swipeArea').style.display = swipe ? 'flex' : 'none';
+    $('feedArea').style.display = swipe ? 'none' : 'flex';
+    $('feedSearchDock').hidden = swipe;
+    $('discover').classList.toggle('feed-mode', !swipe);
+    $('discoverHeading').textContent = swipe ? 'A bite of surprise.' : 'Good bites around campus.';
+    $('discoverMascot').textContent = swipe ? 'Mascot / cookie' : 'Mascot / stamp';
+
+    const filters = state.filters;
+    const count = [filters.type !== 'All', filters.budget !== 40, filters.distance !== 15].filter(Boolean).length;
+    $('filterCount').textContent = count ? '· ' + count : '';
+
+    renderFeedCards();
+
+    if (!arr.length) {
         $('gestureCard').style.display = 'none';
         document.querySelector('.swipe-actions').style.display = 'none';
-        $('feedArea').innerHTML = '<div class="panel empty"><div class="icon-slot">No-match illustration placeholder</div><h2>No bites found.</h2><p class="small muted" style="margin:12px 0">Try relaxing your filters.</p><button class="btn blue" data-action="openFilters">Adjust filters</button></div>';
         $('swipeArea').querySelector('.swipe-hint').textContent = 'No matches · Adjust filters';
         renderNav();
         return;
-    } $('gestureCard').style.display = 'block';
-    document.querySelector('.swipe-actions').style.display = 'grid'; $('swipeArea').querySelector('.swipe-hint').textContent = '← Skip   ·   Tap for details   ·   Want it →'; state.index = state.index % arr.length; const d = arr[state.index]; $('dishName').textContent = d.name; $('dishPrice').textContent = '$' + Number(d.price).toFixed(2); $('dishRestaurant').textContent = d.restaurant + ' · ' + d.location; $('dishSocial').textContent = '♥ Loved by 300 Anteaters'; $('dishPhoto').textContent = d.name + ' photo placeholder'; $('wantButton').textContent = state.saved[d.id] ? 'Saved ✓' : '♥ Want it'; $('feedArea').innerHTML = arr.map(d => `<div class="feed-dish"><div class="photo-slot">Dish photo<br>placeholder</div><div class="details"><strong>${d.name}</strong><p>${d.restaurant}</p><p>$${d.price} · ${d.distance.toFixed(1)} mi</p><button class="want-mini" data-action="feedWant" data-id="${d.id}">${state.saved[d.id] ? 'Saved ✓' : 'Want it ♥'}</button> <button class="want-mini" style="background:var(--sky);color:var(--blue)" data-action="feedDetails" data-id="${d.id}">Details</button></div></div>`).join(''); renderNav();
+    }
+
+    $('gestureCard').style.display = 'block';
+    document.querySelector('.swipe-actions').style.display = 'grid';
+    $('swipeArea').querySelector('.swipe-hint').textContent = '← Skip   ·   Tap for details   ·   Want it →';
+    state.index %= arr.length;
+    const d = arr[state.index];
+    $('dishName').textContent = d.name;
+    $('dishPrice').textContent = '$' + d.price.toFixed(2);
+    $('dishRestaurant').textContent = `${d.restaurant} · ${d.location}`;
+    $('dishSocial').textContent = '♥ Loved by 300 Anteaters';
+    $('dishPhoto').textContent = d.name + ' photo placeholder';
+    $('wantButton').textContent = state.saved[d.id] ? 'Saved ✓' : '♥ Want it';
+    renderNav();
 }
 function advance() {
     const arr = activeDishes(); if (arr.length) {
@@ -184,6 +268,9 @@ document.addEventListener('click', e => {
             case 'feedDetails':
                 showDetail(id);
                 break;
+            case 'seeAll':
+                $('feedSearch').focus();
+                break;
             case 'openFilters':
                 renderFilterControls();
                 openOverlay('filters');
@@ -224,6 +311,16 @@ document.addEventListener('click', e => {
 });
 $('budgetRange').addEventListener('input', updateRange);
 $('distanceRange').addEventListener('input', updateRange);
+$('feedSearch').addEventListener('input', event => {
+    state.feedQuery = event.target.value;
+    renderFeedCards();
+});
+$('feedArea').addEventListener('keydown', event => {
+    if ((event.key === 'Enter' || event.key === ' ') && event.target.matches('.feed-feature-card')) {
+        event.preventDefault();
+        showDetail(event.target.dataset.id);
+    }
+});
 document.querySelectorAll('.overlay').forEach(v => v.addEventListener('click', e => {
     if (e.target === v)
         closeOverlays();
