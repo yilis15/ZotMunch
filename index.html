@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZotMunch · A happy bite at UCI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&family=Fredoka:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="stage">
+  <header class="intro">
+    <span class="eyebrow">IN4MATX 151 · Core mechanic prototype · interactive build · loop 1</span>
+    <h1><mark>ZotMunch</mark></h1>
+    <p>Scroll, drool, munch, repeat! An interactive vertical slice of our dish-first discovery loop for UCI students. Try both Swipe and Feed on the Discover screen. All dishes, restaurants and people here are sample prototype data; authentication and directions are simulated.</p>
+  </header>
+
+  <div class="layout">
+    <div class="phone" id="phone">
+      <div id="app"></div>
+      <div id="sheet" hidden></div>
+      <div class="toast" id="toast" hidden></div>
+    </div>
+
+    <aside class="notes" aria-live="polite">
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">The core loop</div>
+        <div class="loop" id="loop"></div>
+      </div>
+      <div class="sticky" id="note"></div>
+      <div class="tasks">
+        <h3>Test tasks for playtesters</h3>
+        <div id="tasks"></div>
+      </div>
+      <div class="legend">
+        <h3>How to read this wireframe</h3>
+        <p>Emoji food images are prototype placeholders for the final Figma image assets. Gold marks primary actions. All dish, price and distance information is illustrative demo data, not verified business information.</p>
+        <button class="reset-link" id="resetAll">Restart the prototype from sign-in</button>
+      </div>
+    </aside>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
