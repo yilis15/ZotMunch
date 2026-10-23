@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-<!DOCTYPE html>  
-=======
-<!DOCTYPE html> 
->>>>>>> 3890549313daf9a4faff8b5531433ed4e9788328
+<!DOCTYPE html>
 <html lang="en">
  <head>
   <meta charset="utf-8"/>
@@ -394,6 +390,127 @@
                 </form>
                 <p class="review-footer">Good or bad, your experience helps.</p>
             </div>
+        </div>
+    </div>
+
+    <!-- SHARE A BITE -->
+    <div class="view" id="post">
+        <div class="status">
+            <span>9:41</span>
+            <span>▮▮▮ ◉ ▰</span>
+        </div>
+        <div class="scroller post-scroller">
+            <div class="post-content">
+                <header class="detail-header post-header">
+                    <button class="back" data-action="backFromPost" aria-label="Go back">←</button>
+                    <h2>Share a bite</h2>
+                </header>
+                <form id="postForm" class="post-form">
+                    <section class="post-field">
+                        <h3>Photos</h3>
+                        <input id="postPhotosInput" class="sr-only" type="file" accept="image/*" multiple aria-label="Choose dish photos">
+                        <div class="post-photo-row">
+                            <div id="postPhotoPreviews" class="post-photo-previews"></div>
+                            <button type="button" class="post-add-photos" data-action="addPostPhotos">
+                                <span class="review-photo-icon" aria-hidden="true">▧</span>
+                                <span>Add more photos</span>
+                            </button>
+                        </div>
+                    </section>
+                    <label class="post-field">
+                        <span>Dish name</span>
+                        <input id="postDishName" type="text" placeholder="e.g. Mapo tofu" autocomplete="off" required>
+                    </label>
+                    <label class="post-field">
+                        <span>Restaurant</span>
+                        <input id="postRestaurant" type="text" placeholder="Search restaurant" autocomplete="off" required>
+                    </label>
+                    <div id="postRestaurantSuggestions" class="post-restaurant-suggestions" hidden></div>
+                    <p class="post-helper">Choose the restaurant and branch for this dish.</p>
+                    <label class="post-field post-price-field">
+                        <span>Food price</span>
+                        <span class="post-price-input"><span>$</span><input id="postPrice" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" required></span>
+                    </label>
+                    <label class="post-field post-review-field">
+                        <span>What should other Anteaters know about this dish?</span>
+                        <textarea id="postReviewText" placeholder="A little spicy, rich, and comforting." rows="5"></textarea>
+                    </label>
+                    <button type="submit" class="btn gold post-continue">Continue</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- REVIEW AN EXISTING DISH -->
+    <div class="view" id="postReview">
+        <div class="status">
+            <span>9:41</span>
+            <span>▮▮▮ ◉ ▰</span>
+        </div>
+        <div class="scroller post-review-scroller">
+            <div class="post-content post-review-content">
+                <header class="detail-header post-header">
+                    <button class="back" data-action="backToPost" aria-label="Go back">←</button>
+                    <h2>Share a bite</h2>
+                </header>
+                <label class="post-field post-review-field">
+                    <span>What should other Anteaters know about this dish?</span>
+                    <textarea id="existingReviewText" placeholder="A little spicy, rich, and comforting." rows="5"></textarea>
+                </label>
+                <section class="review-tags-panel">
+                    <button type="button" class="review-tags-heading" data-action="togglePostTags" aria-expanded="false">
+                        <span>
+                            <strong>Review dish tags</strong>
+                            <small>Check the current tags, update anything that’s changed, or add what you noticed. You can publish without editing tags.</small>
+                        </span>
+                        <span class="review-tags-toggle">Optional ›</span>
+                    </button>
+                    <div id="postTagOptions" class="post-tag-options" hidden></div>
+                    <div id="postSelectedTags" class="post-selected-tags"></div>
+                </section>
+                <button type="button" class="btn gold post-publish" data-action="publishPost">Publish post</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST PUBLISHED -->
+    <div class="view" id="postSuccess">
+        <div class="status">
+            <span>9:41</span>
+            <span>▮▮▮ ◉ ▰</span>
+        </div>
+        <div class="scroller post-success-scroller">
+            <div class="post-success-content">
+                <div class="post-success-art">
+                    <img src="web/public/mascots/cookie.png" alt="">
+                    <span>ONE MORE HAPPY BITE</span>
+                </div>
+                <h1>Your bite is<br>on the menu!</h1>
+                <p>Thanks for sharing with your fellow Anteaters.</p>
+                <button type="button" class="btn gold" data-action="viewMyPost">View my post</button>
+                <button type="button" class="btn outline" data-action="backToDiscover">Back to Discover</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="overlay post-match-overlay" id="postMatchOverlay" role="dialog" aria-modal="true" aria-labelledby="postMatchTitle">
+        <div class="sheet post-match-sheet">
+            <div class="filter-sheet-handle" aria-hidden="true"></div>
+            <header class="post-match-header">
+                <h2 id="postMatchTitle">Is this the same dish?</h2>
+                <button type="button" class="filter-close" data-action="closePostMatch" aria-label="Close">×</button>
+            </header>
+            <div class="post-match-dish">
+                <img id="postMatchPhoto" src="web/public/seed/mapo-tofu.jpg" alt="">
+                <div>
+                    <h3 id="postMatchDishName">Mapo tofu</h3>
+                    <p id="postMatchRestaurant">Little Wok · University Center</p>
+                    <p id="postMatchAddress">4257 Campus Dr, Irvine</p>
+                </div>
+            </div>
+            <p class="post-match-copy">Add your review and photos to the existing dish.</p>
+            <button type="button" class="btn blue" data-action="addMyReview">Add my review</button>
+            <button type="button" class="post-different-dish" data-action="dismissPostMatch">This is a different dish — keep posting</button>
         </div>
     </div>
 

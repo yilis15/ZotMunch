@@ -93,7 +93,22 @@ const state = {
     saved: read('saved', {}), diet: read('diet', []), allergies: read('allergies', []),
     filters: normalizeFilters(read('filters', filterDefaults())),
     savedFilter: 'all', detailId: null, editing: false,
-    reviewRating: 4, reviewPhotos: []
+    reviewRating: 4, reviewPhotos: [],
+    postPhotos: [], postRestaurantBranch: null, postMatch: null,
+    postMatchDismissed: '', postTagsExpanded: false, postTags: []
+};
+const restaurantBranches = [
+    { restaurant: 'Little Wok', location: 'University Center', address: '4257 Campus Dr, Irvine' },
+    { restaurant: 'Little Wok', location: 'Westpark', address: '1800 Main St, Irvine' },
+    { restaurant: 'Bluebird Café', location: 'Campus Plaza', address: '4100 Campus Dr, Irvine' },
+    { restaurant: 'Noodle Club', location: 'Campus Plaza', address: '4100 Campus Dr, Irvine' }
+];
+const postTagOptions = {
+    'Dietary preferences': ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten-free', 'Dairy-free'],
+    Allergies: ['Milk', 'Eggs', 'Fish', 'Shellfish', 'Peanuts', 'Tree nuts', 'Wheat', 'Soy', 'Sesame'],
+    Cuisine: ['Japanese', 'Taiwanese', 'Mexican', 'Vietnamese', 'Korean', 'Chinese', 'Indian', 'Thai'],
+    'Food type': ['Rice', 'Noodles', 'Hot pot', 'Dumplings', 'Sandwich', 'Dessert', 'Drinks'],
+    Flavor: ['Spicy', 'Sweet', 'Sour', 'Savory', 'Light & Fresh']
 };
 let draftFilters = filterDefaults();
 const persist = (k, v) => localStorage.setItem('zm_' + k, JSON.stringify(v));
@@ -125,7 +140,9 @@ function showPage(page) {
         renderSaved(); if (page === 'me')
         renderNav(); if (page === 'preferences')
         renderChoices(); if (page === 'review')
-        renderReview(); const scroll = document.querySelector('#' + page + ' .scroller'); if (scroll)
+        renderReview(); if (page === 'post')
+        renderPost(); if (page === 'postReview')
+        renderPostReview(); const scroll = document.querySelector('#' + page + ' .scroller'); if (scroll)
         scroll.scrollTop = 0;
 }
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); }
@@ -636,6 +653,213 @@ function postReview(event) {
     toast('Thanks! Your review has been posted.');
 }
 
+function clearPostPhotoPreviews() {
+    state.postPhotos.forEach(photo => URL.revokeObjectURL(photo.url));
+    state.postPhotos = [];
+    $('postPhotoPreviews').replaceChildren();
+    $('postPhotosInput').value = '';
+}
+
+function startPost() {
+    clearPostPhotoPreviews();
+    state.postRestaurantBranch = null;
+    state.postMatch = null;
+    state.postMatchDismissed = '';
+    state.postTags = [];
+    state.postTagsExpanded = false;
+    $('postForm').reset();
+    $('postRestaurantSuggestions').hidden = true;
+    $('postRestaurantSuggestions').replaceChildren();
+    showPage('post');
+}
+
+function renderPost() {
+    if (!state.postRestaurantBranch) $('postRestaurantSuggestions').hidden = true;
+}
+
+function normalized(value) {
+    return value.trim().toLocaleLowerCase().replace(/\s+/g, ' ');
+}
+
+function renderRestaurantSuggestions(query) {
+    const container = $('postRestaurantSuggestions');
+    const term = normalized(query);
+    const matches = term
+        ? restaurantBranches.filter(branch =>
+            normalized(`${branch.restaurant} ${branch.location} ${branch.address}`).includes(term)
+        )
+        : restaurantBranches;
+    container.replaceChildren();
+    if (!matches.length) {
+        container.hidden = true;
+        return;
+    }
+    matches.forEach(branch => {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'post-restaurant-option';
+        option.dataset.action = 'selectPostRestaurant';
+        option.dataset.restaurant = branch.restaurant;
+        option.dataset.location = branch.location;
+        option.dataset.address = branch.address;
+        option.innerHTML = `<span class="post-pin" aria-hidden="true">♧</span><span><strong>${branch.restaurant} · ${branch.location}</strong><small>${branch.address}</small></span>`;
+        container.appendChild(option);
+    });
+    container.hidden = false;
+}
+
+function findPostDishMatch() {
+    const branch = state.postRestaurantBranch;
+    if (!branch) return null;
+    const dishName = normalized($('postDishName').value);
+    const restaurantName = normalized(branch.restaurant);
+    const location = normalized(branch.location);
+    if (!dishName) return null;
+    return dishes.find(dish =>
+        normalized(dish.name) === dishName &&
+        normalized(dish.restaurant) === restaurantName &&
+        normalized(dish.location) === location
+    ) ?? null;
+}
+
+function checkPostDishMatch() {
+    const match = findPostDishMatch();
+    if (!match) {
+        state.postMatch = null;
+        return false;
+    }
+    const signature = `${match.id}:${normalized(state.postRestaurantBranch.address)}`;
+    if (signature === state.postMatchDismissed) return false;
+    if (state.postMatch?.id === match.id) return true;
+    state.postMatch = match;
+    $('postMatchDishName').textContent = match.name;
+    $('postMatchRestaurant').textContent = `${match.restaurant} · ${match.location}`;
+    $('postMatchAddress').textContent = state.postRestaurantBranch.address;
+    $('postMatchOverlay').classList.add('show');
+    return true;
+}
+
+function selectPostRestaurant(button) {
+    state.postRestaurantBranch = {
+        restaurant: button.dataset.restaurant,
+        location: button.dataset.location,
+        address: button.dataset.address
+    };
+    state.postMatchDismissed = '';
+    $('postRestaurant').value = button.dataset.restaurant;
+    $('postRestaurantSuggestions').hidden = true;
+    checkPostDishMatch();
+}
+
+function renderPostPhotoPreviews() {
+    const container = $('postPhotoPreviews');
+    container.replaceChildren();
+    state.postPhotos.forEach((photo, index) => {
+        const item = document.createElement('div');
+        item.className = 'post-photo-preview';
+        const image = document.createElement('img');
+        image.src = photo.url;
+        image.alt = `Dish photo ${index + 1}`;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'review-photo-remove';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', `Remove dish photo ${index + 1}`);
+        remove.addEventListener('click', () => {
+            URL.revokeObjectURL(photo.url);
+            state.postPhotos.splice(index, 1);
+            renderPostPhotoPreviews();
+        });
+        item.append(image, remove);
+        container.appendChild(item);
+    });
+}
+
+function savePostDraft(event) {
+    event.preventDefault();
+    const branch = state.postRestaurantBranch;
+    if (!branch) {
+        toast('Choose a restaurant and branch first.');
+        $('postRestaurant').focus();
+        renderRestaurantSuggestions($('postRestaurant').value);
+        return;
+    }
+    const match = findPostDishMatch();
+    if (match && checkPostDishMatch()) {
+        return;
+    }
+    state.postMatch = null;
+    state.postTags = [];
+    $('existingReviewText').value = $('postReviewText').value.trim();
+    showPage('postReview');
+}
+
+function renderPostReview() {
+    const heading = document.querySelector('#postReview .post-header h2');
+    if (heading) heading.textContent = 'Share a bite';
+    const button = document.querySelector('.review-tags-heading');
+    button.setAttribute('aria-expanded', String(state.postTagsExpanded));
+    $('postTagOptions').hidden = !state.postTagsExpanded;
+    $('postTagOptions').innerHTML = state.postTagsExpanded
+        ? Object.entries(postTagOptions).map(([group, options]) => `
+            <section class="post-tag-group">
+                <h4>${group}</h4>
+                <div class="post-tag-chips">${options.map(tag => `
+                    <button type="button" class="post-tag-chip${state.postTags.includes(tag) ? ' selected' : ''}"
+                        data-action="togglePostTag" data-tag="${tag}" aria-pressed="${state.postTags.includes(tag)}">${tag}</button>
+                `).join('')}</div>
+            </section>`).join('')
+        : '';
+    $('postSelectedTags').innerHTML = state.postTags.map(tag => `<span class="post-selected-tag">${tag}</span>`).join('');
+}
+
+function publishPost() {
+    const branch = state.postRestaurantBranch;
+    const match = state.postMatch;
+    const body = $('existingReviewText').value.trim();
+    const post = {
+        id: `post-${Date.now()}`,
+        dishId: match?.id ?? null,
+        dishName: match?.name ?? $('postDishName').value.trim(),
+        restaurant: branch?.restaurant ?? $('postRestaurant').value.trim(),
+        location: branch?.location ?? '',
+        address: branch?.address ?? '',
+        price: Number($('postPrice').value),
+        body,
+        tags: [...state.postTags],
+        createdAt: new Date().toISOString()
+    };
+    const posts = read('posts', []);
+    posts.unshift(post);
+    persist('posts', posts);
+
+    if (match) {
+        const reviews = read('reviews', {});
+        const dishReviews = reviews[match.id] || [];
+        dishReviews.push({ body, tags: [...state.postTags], createdAt: post.createdAt });
+        reviews[match.id] = dishReviews;
+        persist('reviews', reviews);
+    } else {
+        const newDish = {
+            id: post.id,
+            name: post.dishName,
+            restaurant: post.restaurant,
+            location: post.location,
+            price: post.price,
+            distance: 0,
+            kind: 'Other',
+            desc: body,
+            image: state.postPhotos[0]?.url
+        };
+        dishes.unshift(newDish);
+        const reviews = read('reviews', {});
+        reviews[newDish.id] = [{ body, tags: [...state.postTags], createdAt: post.createdAt }];
+        persist('reviews', reviews);
+        state.postMatch = newDish;
+    }
+    showPage('postSuccess');
+}
+
 // Return to the previous page
 function backFromDetail() {
     showPage(detailReturnPage);
@@ -677,7 +901,7 @@ document.addEventListener('click', e => {
                 break;
             case 'nav':
                 if (b.dataset.page === 'post') {
-                    toast('Posting is outside this vertical slice.');
+                    startPost();
                 }
                 else
                     showPage(b.dataset.page);
@@ -790,6 +1014,61 @@ document.addEventListener('click', e => {
             case 'writeReview':
                 showReview();
                 break;
+            case 'backFromPost':
+                clearPostPhotoPreviews();
+                showPage('discover');
+                break;
+            case 'backToPost':
+                showPage('post');
+                break;
+            case 'selectPostRestaurant':
+                selectPostRestaurant(b);
+                break;
+            case 'addPostPhotos':
+                $('postPhotosInput').click();
+                break;
+            case 'addMyReview':
+                if (state.postMatch) {
+                    $('postMatchOverlay').classList.remove('show');
+                    $('existingReviewText').value = $('postReviewText').value.trim();
+                    state.postTags = state.postMatch.id === 'tofu' ? ['Spicy'] : [];
+                    state.postTagsExpanded = false;
+                    showPage('postReview');
+                }
+                break;
+            case 'closePostMatch':
+            case 'dismissPostMatch': {
+                const match = state.postMatch;
+                if (match && state.postRestaurantBranch) {
+                    state.postMatchDismissed = `${match.id}:${normalized(state.postRestaurantBranch.address)}`;
+                }
+                state.postMatch = null;
+                $('postMatchOverlay').classList.remove('show');
+                break;
+            }
+            case 'togglePostTags':
+                state.postTagsExpanded = !state.postTagsExpanded;
+                renderPostReview();
+                break;
+            case 'togglePostTag': {
+                const tag = b.dataset.tag;
+                state.postTags = state.postTags.includes(tag)
+                    ? state.postTags.filter(item => item !== tag)
+                    : [...state.postTags, tag];
+                renderPostReview();
+                break;
+            }
+            case 'publishPost':
+                publishPost();
+                break;
+            case 'viewMyPost':
+                if (state.postMatch) showDetail(state.postMatch.id);
+                break;
+            case 'backToDiscover':
+                clearPostPhotoPreviews();
+                state.postMatch = null;
+                showPage('discover');
+                break;
             case 'backFromReview':
                 showPage('detail');
                 break;
@@ -812,6 +1091,22 @@ $('reviewPhotosInput').addEventListener('change', event => {
     event.target.value = '';
 });
 $('reviewForm').addEventListener('submit', postReview);
+$('postForm').addEventListener('submit', savePostDraft);
+$('postRestaurant').addEventListener('input', event => {
+    state.postRestaurantBranch = null;
+    state.postMatchDismissed = '';
+    renderRestaurantSuggestions(event.target.value);
+});
+$('postDishName').addEventListener('input', () => {
+    state.postMatchDismissed = '';
+    checkPostDishMatch();
+});
+$('postPhotosInput').addEventListener('change', event => {
+    const files = Array.from(event.target.files || []).filter(file => file.type.startsWith('image/'));
+    state.postPhotos.push(...files.map(file => ({ file, url: URL.createObjectURL(file) })));
+    renderPostPhotoPreviews();
+    event.target.value = '';
+});
 $('feedSearch').addEventListener('input', event => {
     state.feedQuery = event.target.value;
     renderFeedCards();
@@ -828,8 +1123,17 @@ document.addEventListener('keydown', event => {
     showDetail(card.dataset.id);
 });
 document.querySelectorAll('.overlay').forEach(v => v.addEventListener('click', e => {
-    if (e.target === v)
+    if (e.target !== v) return;
+    if (v.id === 'postMatchOverlay') {
+        const match = state.postMatch;
+        if (match && state.postRestaurantBranch) {
+            state.postMatchDismissed = `${match.id}:${normalized(state.postRestaurantBranch.address)}`;
+        }
+        state.postMatch = null;
+        v.classList.remove('show');
+    } else {
         closeOverlays();
+    }
 }));
 let startX = 0, startY = 0;
 $('gestureCard').addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });

@@ -1736,6 +1736,473 @@ h2 {
     text-align: center;
 }
 
+/* ==========================================
+   SHARE A BITE / POST
+========================================== */
+
+.post-scroller,
+.post-review-scroller,
+.post-success-scroller {
+    top: 52px;
+    bottom: 8px;
+}
+
+.post-content {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    padding: 0 24px 28px;
+}
+
+.post-header {
+    margin-bottom: 2px;
+}
+
+.post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.post-field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    color: var(--ink);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.post-field input,
+.post-field textarea {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 15px;
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 15px/1.4 'Nunito Sans', sans-serif;
+}
+
+.post-field input::placeholder,
+.post-field textarea::placeholder {
+    color: var(--muted);
+    opacity: 1;
+}
+
+.post-field input:focus,
+.post-field textarea:focus {
+    outline: 2px solid var(--blue);
+    outline-offset: 1px;
+}
+
+.post-photo-row {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    min-height: 90px;
+}
+
+.post-photo-previews {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 8px;
+}
+
+.post-photo-preview {
+    position: relative;
+    width: 90px;
+    height: 90px;
+}
+
+.post-photo-preview img {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    object-fit: cover;
+}
+
+.post-add-photos {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-width: 0;
+    min-height: 90px;
+    border: 0;
+    border-radius: 24px;
+    background: var(--sky);
+    color: var(--blue);
+    font-size: 14px;
+}
+
+.post-restaurant-suggestions {
+    display: flex;
+    flex-direction: column;
+    margin-top: -7px;
+    overflow: hidden;
+    border: 1.5px solid var(--line);
+    border-radius: 22px;
+    background: var(--paper);
+}
+
+.post-restaurant-suggestions[hidden],
+.post-tag-options[hidden] {
+    display: none;
+}
+
+.post-restaurant-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    border: 0;
+    background: transparent;
+    text-align: left;
+}
+
+.post-restaurant-option + .post-restaurant-option {
+    border-top: 1px solid #0022441a;
+}
+
+.post-restaurant-option:hover {
+    background: var(--sky);
+}
+
+.post-pin {
+    flex: 0 0 auto;
+    color: var(--ink);
+    font-size: 23px;
+    line-height: 1;
+}
+
+.post-restaurant-option strong,
+.post-restaurant-option small {
+    display: block;
+}
+
+.post-restaurant-option strong {
+    font-size: 14px;
+}
+
+.post-restaurant-option small {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.post-helper {
+    margin-top: -9px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.post-price-input {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 15px;
+    border: 1.5px solid var(--line);
+    border-radius: 18px;
+    background: var(--paper);
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.post-price-input:focus-within {
+    border-color: var(--blue);
+}
+
+.post-price-input input {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    min-height: 45px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    outline: 0;
+}
+
+.post-price-input input:focus {
+    outline: 0;
+}
+
+.post-price-input input::-webkit-inner-spin-button,
+.post-price-input input::-webkit-outer-spin-button {
+    margin: 0;
+    appearance: none;
+}
+
+.post-price-input input {
+    appearance: textfield;
+}
+
+.post-review-field textarea {
+    min-height: 150px;
+    padding: 15px;
+    resize: vertical;
+    border-radius: 22px;
+}
+
+.post-continue,
+.post-publish {
+    min-height: 54px;
+    border-radius: 20px;
+    font-size: 17px;
+}
+
+.post-review-content {
+    min-height: calc(100dvh - 60px);
+    padding-bottom: 24px;
+}
+
+.post-review-field {
+    margin-top: 2px;
+}
+
+.post-review-field textarea {
+    min-height: 150px;
+}
+
+.review-tags-panel {
+    padding: 14px;
+    border-radius: 24px;
+    background: var(--sky);
+}
+
+.review-tags-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    text-align: left;
+}
+
+.review-tags-heading strong {
+    display: block;
+    font-size: 15px;
+}
+
+.review-tags-heading small {
+    display: block;
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+.review-tags-toggle {
+    flex: 0 0 auto;
+    color: var(--blue);
+    font-size: 12px;
+}
+
+.post-selected-tags,
+.post-tag-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.post-selected-tags {
+    margin-top: 11px;
+}
+
+.post-selected-tag,
+.post-tag-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 33px;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.post-tag-options {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 15px;
+}
+
+.post-tag-group h4 {
+    margin: 0 0 7px;
+    font-size: 12px;
+}
+
+.post-tag-chip {
+    cursor: pointer;
+}
+
+.post-tag-chip.selected {
+    border-color: var(--blue);
+    background: var(--blue);
+    color: white;
+}
+
+.post-publish {
+    width: calc(100% - 20px);
+    margin: auto 10px 0;
+    flex-shrink: 0;
+}
+
+.post-success-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100%;
+    padding: 62px 24px 24px;
+    text-align: center;
+}
+
+.post-success-art {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    aspect-ratio: 1.26;
+    flex: 0 0 auto;
+    border-radius: 30px;
+    background: var(--blue);
+}
+
+.post-success-art img {
+    width: min(62%, 220px);
+    aspect-ratio: 1;
+    object-fit: contain;
+}
+
+.post-success-art span {
+    margin-top: -1px;
+    color: var(--gold);
+    font-size: 11px;
+}
+
+.post-success-content h1 {
+    margin-top: 48px;
+    font-size: 29px;
+    line-height: 1.12;
+}
+
+.post-success-content > p {
+    max-width: 300px;
+    margin-top: 16px;
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.post-success-content .btn {
+    height: 52px;
+    flex: 0 0 auto;
+    font-size: 16px;
+}
+
+.post-success-content > .btn.gold {
+    margin-top: 9px;
+}
+
+.post-success-content > .btn.outline {
+    margin-top: 16px;
+}
+
+.post-match-overlay {
+    z-index: 15;
+    background: rgba(0, 34, 68, .32);
+}
+
+.post-match-sheet {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    max-height: 78%;
+    padding: 14px 22px 24px;
+    overflow-y: auto;
+    border-radius: 26px 26px 0 0;
+    background: var(--cream);
+}
+
+.post-match-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.post-match-header h2 {
+    font-size: 21px;
+}
+
+.post-match-header .filter-close {
+    position: static;
+    flex: 0 0 auto;
+}
+
+.post-match-dish {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px;
+    border: 1.5px solid var(--line);
+    border-radius: 22px;
+    background: var(--paper);
+}
+
+.post-match-dish img {
+    width: 76px;
+    height: 76px;
+    flex: 0 0 auto;
+    border-radius: 17px;
+    object-fit: cover;
+}
+
+.post-match-dish h3 {
+    font-size: 20px;
+}
+
+.post-match-dish p {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.post-match-copy {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.post-match-sheet > .btn {
+    min-height: 52px;
+    border-radius: 18px;
+    font-size: 16px;
+}
+
+.post-different-dish {
+    padding: 2px 0;
+    border: 0;
+    background: transparent;
+    color: var(--blue);
+    text-decoration: underline;
+    font-size: 12px;
+}
+
 /* SMALL SCREEN ADJUSTMENTS */
 @media (max-height: 700px) {
     .detail-photo {
