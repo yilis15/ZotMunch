@@ -98,6 +98,61 @@ export async function getDish(id) {
   return { ...dish, reviews }
 }
 
+export async function createReview(userId, dishId, rating, body, photos) {
+  const uploadedPaths = []
+  let review
+
+  try {
+    for (const photo of photos) {
+      const extension = photo.name.split('.').pop()?.replace(/[^a-zA-Z0-9]/g, '') || 'jpg'
+      const path = `${userId}/${dishId}/${crypto.randomUUID()}.${extension}`
+      const { error } = await supabase.storage.from('dish-photos').upload(path, photo, {
+        contentType: photo.type,
+        upsert: false,
+      })
+      if (error) throw error
+      uploadedPaths.push(path)
+    }
+
+    review = check(
+      await supabase
+        .from('reviews')
+        .insert({ user_id: userId, dish_id: dishId, rating, body: body.trim() || null })
+        .select('id')
+        .single(),
+    )
+  } catch (error) {
+    if (uploadedPaths.length) {
+      const { error: cleanupError } = await supabase.storage.from('dish-photos').remove(uploadedPaths)
+      if (cleanupError) {
+        throw new Error(`${error.message ?? error}; photo cleanup failed: ${cleanupError.message}`)
+      }
+    }
+    throw error
+  }
+
+  if (!uploadedPaths.length) return { review, photoError: null }
+
+  try {
+    check(
+      await supabase.from('dish_photos').insert(
+        uploadedPaths.map((storage_path) => ({
+          storage_path,
+          dish_id: dishId,
+          review_id: review.id,
+        })),
+      ),
+    )
+    return { review, photoError: null }
+  } catch (photoError) {
+    const { error: cleanupError } = await supabase.storage.from('dish-photos').remove(uploadedPaths)
+    const message = cleanupError
+      ? `${photoError.message ?? photoError}; photo cleanup failed: ${cleanupError.message}`
+      : photoError.message ?? String(photoError)
+    return { review, photoError: message }
+  }
+}
+
 export async function getRestaurant(id) {
   const restaurant = check(await supabase.from('restaurants').select('id, name, address').eq('id', id).single())
   const rows = check(await supabase.from('dishes').select(DISH_FIELDS).eq('restaurant_id', id))

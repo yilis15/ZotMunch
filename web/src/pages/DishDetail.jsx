@@ -78,6 +78,12 @@ export default function DishDetail() {
   return (
     <div className="page detail">
       <BackBar title="Dish details" />
+      {state?.reviewPosted && (
+        <p className="review-success" role="status">
+          Thanks for sharing your bite! Your review has been posted.
+          {state.photoError && ` Your review photos could not be added: ${state.photoError}`}
+        </p>
+      )}
       <div className="detail__grid">
         <DishPhoto dish={dish} className="detail__photo" />
 
@@ -120,7 +126,11 @@ export default function DishDetail() {
             </button>
           )}
 
-          <section className="detail__tags">
+          <Link to={`/dish/${id}/review`} className="btn btn--blue btn--block">
+            Write a review
+          </Link>
+
+          <section className="detail__tags" id="dish-tags">
             {TAG_GROUPS.map(([category, label]) => {
               const names = tagNames(category)
               if (!names.length) return null

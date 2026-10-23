@@ -14,7 +14,7 @@ npm run dev        # http://localhost:5173
 ## What's here
 
 - Login (Google or emailed code) → Everyday preferences → Discover (Swipe / Feed + temporary filters)
-- Dish details, Other popular dishes, Saved (Not yet ⇄ Tried it)
-- Post and Me are placeholders for the next round
+- Dish details, Write a review, Other popular dishes, Saved (Not yet ⇄ Tried it)
+- Post and Me have placeholder content for the next round
 
 All queries live in `src/lib/api.js`. Demo dishes come from `../supabase/seed.sql`; their photos are in `public/seed/`.

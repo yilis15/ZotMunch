@@ -92,7 +92,8 @@ const state = {
     page: 'welcome', mode: 'swipe', index: 1, feedQuery: '',
     saved: read('saved', {}), diet: read('diet', []), allergies: read('allergies', []),
     filters: normalizeFilters(read('filters', filterDefaults())),
-    savedFilter: 'all', detailId: null, editing: false
+    savedFilter: 'all', detailId: null, editing: false,
+    reviewRating: 4, reviewPhotos: []
 };
 let draftFilters = filterDefaults();
 const persist = (k, v) => localStorage.setItem('zm_' + k, JSON.stringify(v));
@@ -123,7 +124,8 @@ function showPage(page) {
         renderDiscover(); if (page === 'saved')
         renderSaved(); if (page === 'me')
         renderNav(); if (page === 'preferences')
-        renderChoices(); const scroll = document.querySelector('#' + page + ' .scroller'); if (scroll)
+        renderChoices(); if (page === 'review')
+        renderReview(); const scroll = document.querySelector('#' + page + ' .scroller'); if (scroll)
         scroll.scrollTop = 0;
 }
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); }
@@ -521,6 +523,7 @@ function showDetail(id) {
 
     $('detailLocation').textContent =
         `${dish.location} · ${dish.distance.toFixed(1)} mi`;
+    renderDetailReview(id);
 
     // Dish image or placeholder
     const photo = $('detailPhoto');
@@ -545,6 +548,93 @@ function showDetail(id) {
     showPage('detail');
 }
 
+function renderDetailReview(id) {
+    const reviews = read('reviews', {});
+    const dishReviews = reviews[id] || [];
+    const latest = dishReviews[dishReviews.length - 1];
+    const rating = latest?.rating ?? 4.6;
+    const reviewText = latest?.body || '“Comfort food after a long lab. A little spicy!”';
+    const ratingRow = document.querySelector('.detail-rating');
+    const reviewBody = document.querySelector('.detail-review-text');
+    if (ratingRow) {
+        ratingRow.innerHTML = `<span class="detail-stars">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5 - Math.round(rating))}</span><span>${rating.toFixed(1)} · ${18 + dishReviews.length} reviews</span>`;
+    }
+    if (reviewBody) reviewBody.textContent = latest?.body ? `“${latest.body}”` : reviewText;
+}
+
+function renderReview() {
+    const dish = dishes.find(item => item.id === state.detailId);
+    if (!dish) return;
+    $('reviewDishName').textContent = dish.name;
+    $('reviewDishRestaurant').textContent = `${dish.restaurant} · ${dish.location}`;
+    $('reviewDishPhoto').textContent = `${dish.name} photo placeholder`;
+    state.reviewRating = 4;
+    state.reviewPhotos = [];
+    $('reviewText').value = '';
+    $('reviewPhotoPreviews').replaceChildren();
+    renderReviewStars();
+}
+
+function renderReviewStars() {
+    document.querySelectorAll('[data-action="rateReview"]').forEach(button => {
+        const selected = Number(button.dataset.rating) <= state.reviewRating;
+        button.classList.toggle('selected', selected);
+        button.setAttribute('aria-checked', String(Number(button.dataset.rating) === state.reviewRating));
+    });
+}
+
+function showReview() {
+    if (!state.detailId) return;
+    state.reviewRating = 4;
+    state.reviewPhotos = [];
+    showPage('review');
+}
+
+function renderReviewPhotoPreviews() {
+    const container = $('reviewPhotoPreviews');
+    container.replaceChildren();
+    state.reviewPhotos.forEach((photo, index) => {
+        const item = document.createElement('div');
+        item.className = 'review-photo-preview';
+        const image = document.createElement('img');
+        image.src = photo.url;
+        image.alt = `Review photo ${index + 1}`;
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'review-photo-remove';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', `Remove photo ${index + 1}`);
+        remove.addEventListener('click', () => {
+            URL.revokeObjectURL(photo.url);
+            state.reviewPhotos.splice(index, 1);
+            renderReviewPhotoPreviews();
+        });
+        item.append(image, remove);
+        container.appendChild(item);
+    });
+}
+
+function postReview(event) {
+    event.preventDefault();
+    if (!state.reviewRating) {
+        toast('Please select a star rating first.');
+        return;
+    }
+    const reviews = read('reviews', {});
+    const dishReviews = reviews[state.detailId] || [];
+    dishReviews.push({
+        rating: state.reviewRating,
+        body: $('reviewText').value.trim(),
+        createdAt: new Date().toISOString()
+    });
+    reviews[state.detailId] = dishReviews;
+    persist('reviews', reviews);
+    state.reviewPhotos.forEach(photo => URL.revokeObjectURL(photo.url));
+    state.reviewPhotos = [];
+    renderDetailReview(state.detailId);
+    showPage('detail');
+    toast('Thanks! Your review has been posted.');
+}
 
 // Return to the previous page
 function backFromDetail() {
@@ -698,10 +788,30 @@ document.addEventListener('click', e => {
                 break;
             }
             case 'writeReview':
-                toast('Review posting is planned for a later build.');
+                showReview();
+                break;
+            case 'backFromReview':
+                showPage('detail');
+                break;
+            case 'rateReview':
+                state.reviewRating = Number(b.dataset.rating);
+                renderReviewStars();
+                break;
+            case 'addReviewPhotos':
+                $('reviewPhotosInput').click();
+                break;
+            case 'reviewEditTags':
+                toast('Edit tags from the dish details page.');
                 break;
         }
 });
+$('reviewPhotosInput').addEventListener('change', event => {
+    const files = Array.from(event.target.files || []).filter(file => file.type.startsWith('image/'));
+    state.reviewPhotos.push(...files.map(file => ({ file, url: URL.createObjectURL(file) })));
+    renderReviewPhotoPreviews();
+    event.target.value = '';
+});
+$('reviewForm').addEventListener('submit', postReview);
 $('feedSearch').addEventListener('input', event => {
     state.feedQuery = event.target.value;
     renderFeedCards();

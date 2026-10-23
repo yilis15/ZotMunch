@@ -8,6 +8,7 @@ import Discover from './pages/Discover'
 import DishDetail from './pages/DishDetail'
 import Restaurant from './pages/Restaurant'
 import Saved from './pages/Saved'
+import WriteReview from './pages/WriteReview'
 import { Me, Post } from './pages/Placeholders'
 
 function skippedOnboarding() {
@@ -46,6 +47,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route index element={<Discover />} />
           <Route path="dish/:id" element={<DishDetail />} />
+          <Route path="dish/:id/review" element={<WriteReview />} />
           <Route path="restaurant/:id" element={<Restaurant />} />
           <Route path="saved" element={<Saved />} />
           <Route path="post" element={<Post />} />

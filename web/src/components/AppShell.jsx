@@ -1,5 +1,5 @@
 // Page frame: bottom tab bar on phones, left sidebar on wider screens.
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import Icon from './Icon'
 
 const TABS = [
@@ -10,8 +10,11 @@ const TABS = [
 ]
 
 export default function AppShell() {
+  const { pathname } = useLocation()
+  const isReviewPage = pathname.endsWith('/review')
+
   return (
-    <div className="shell">
+    <div className={`shell${isReviewPage ? ' shell--review' : ''}`}>
       <nav className="nav" aria-label="Main">
         <p className="nav__logo wordmark">
           Zot<span>Munch</span>

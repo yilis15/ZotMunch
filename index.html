@@ -339,6 +339,64 @@
 
     </div>
 
+    <!-- WRITE A REVIEW PAGE -->
+    <div class="view" id="review">
+        <div class="status">
+            <span>9:41</span>
+            <span>▮▮▮ ◉ ▰</span>
+        </div>
+        <div class="scroller review-scroller">
+            <div class="review-content">
+                <header class="detail-header review-header">
+                    <button class="back" data-action="backFromReview" aria-label="Go back">←</button>
+                    <h2>Write a review</h2>
+                </header>
+                <header class="review-hero">
+                    <div>
+                        <p class="label">YOUR HONEST TAKE</p>
+                        <h1>Tell us about<br>this bite.</h1>
+                    </div>
+                    <img class="review-mascot" src="web/public/mascots/cookie.png" alt="" aria-hidden="true">
+                </header>
+                <section class="review-dish">
+                    <div class="review-dish-photo photo-slot" id="reviewDishPhoto">Dish photo</div>
+                    <div class="review-dish-info">
+                        <h2 id="reviewDishName">Mapo tofu</h2>
+                        <p id="reviewDishRestaurant">Little Wok · University Center</p>
+                        <div class="review-dish-meta">
+                            <span class="review-spice" aria-label="Spice level">♨</span>
+                            <button type="button" class="review-edit-tags" data-action="reviewEditTags">Edit tags</button>
+                        </div>
+                    </div>
+                </section>
+                <form id="reviewForm" class="review-form">
+                    <fieldset class="review-rating">
+                        <legend>How was it?</legend>
+                        <div class="review-stars" role="radiogroup" aria-label="Rating">
+                            <button type="button" data-action="rateReview" data-rating="1" aria-label="1 star" aria-checked="false">★</button>
+                            <button type="button" data-action="rateReview" data-rating="2" aria-label="2 stars" aria-checked="false">★</button>
+                            <button type="button" data-action="rateReview" data-rating="3" aria-label="3 stars" aria-checked="false">★</button>
+                            <button type="button" data-action="rateReview" data-rating="4" aria-label="4 stars" aria-checked="false">★</button>
+                            <button type="button" data-action="rateReview" data-rating="5" aria-label="5 stars" aria-checked="false">★</button>
+                        </div>
+                    </fieldset>
+                    <label class="review-body">
+                        <span>What should other Anteaters know about this dish?</span>
+                        <textarea id="reviewText" placeholder="The good, the not-so-good, and your tips." rows="5"></textarea>
+                    </label>
+                    <input id="reviewPhotosInput" class="sr-only" type="file" accept="image/*" multiple aria-label="Choose review photos">
+                    <div id="reviewPhotoPreviews" class="review-photo-previews"></div>
+                    <button type="button" class="review-add-photos" data-action="addReviewPhotos">
+                        <span class="review-photo-icon" aria-hidden="true">▧</span>
+                        <span>Add photos</span>
+                    </button>
+                    <button type="submit" class="btn blue review-submit">Post review</button>
+                </form>
+                <p class="review-footer">Good or bad, your experience helps.</p>
+            </div>
+        </div>
+    </div>
+
    <div class="view" id="saved">
     <div class="status">
      <span>

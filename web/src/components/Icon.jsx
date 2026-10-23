@@ -40,6 +40,13 @@ const PATHS = {
   check: <path d="m5 12.5 4.5 4.5L19 7" />,
   star: <path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z" />,
   external: <path d="M14 5h5v5M19 5l-8 8M17 14v5H5V7h5" />,
+  photo: (
+    <>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="8.5" cy="9" r="1.5" />
+      <path d="m21 15-5-5L5 20" />
+    </>
+  ),
 }
 
 export default function Icon({ name, size = 22, className, label }) {
