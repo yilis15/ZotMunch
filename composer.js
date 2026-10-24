@@ -5,7 +5,7 @@ const tagCategories = {
  Cuisine:['Japanese','Taiwanese','Mexican','Vietnamese','Korean','Hawaiian','Middle Eastern','Italian','Chinese','Indian','Filipino','Thai'],
  'Food type':['Rice','Noodles','Hot pot','Dumplings','Tacos','Pizza','Sandwich','Dessert','Drinks'],
  Flavor:['Spicy','Sweet','Sour','Savory','Light & Fresh'],
- Scene:['Breakfast','Lunch','Dinner','Late night','Study break'],
+ Scene:['Eating Alone','Date','Friends','Family','Quick Meal'],
  'Dining options':['Dine-in','Takeout','Delivery','Outdoor seating']
 };
 const composer = {editId:null, tags:[], tagDraft:[], tagFrom:'post', scroll:0, reviewFrom:'detail', lastDish:null};
