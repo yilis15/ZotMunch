@@ -4,6 +4,7 @@
 const dishes = [
     {
         id: 'pancake',
+        image: 'assets/food/pancakes.jpg',
         cuisine: 'American',
         foodType: 'Dessert',
         flavor: 'Sweet',
@@ -17,6 +18,7 @@ const dishes = [
     },
     {
         id: 'tofu',
+        image: 'assets/food/mapo-tofu.jpg',
         cuisine: 'Chinese',
         foodType: 'Rice',
         flavor: 'Spicy',
@@ -30,6 +32,7 @@ const dishes = [
     },
     {
         id: 'ramen',
+        image: 'assets/food/ramen.jpg',
         cuisine: 'Japanese',
         foodType: 'Noodles',
         flavor: 'Savory',
@@ -66,6 +69,13 @@ const dishes = [
         distance: 1.3,
         kind: 'Chinese',
         desc: 'Savory noodles for a happy bite.'
+    },
+    {
+        id: 'chicken', cuisine: 'Chinese', foodType: 'Rice', flavor: 'Savory',
+        name: 'Chicken rice', restaurant: 'Campus Kitchen', location: 'Near UCI',
+        price: 14.50, distance: 1.1, kind: 'Chinese',
+        image: 'assets/food/chicken-rice.jpg',
+        desc: 'A rice dish featured in the companion web prototype.'
     }
 ];
 
@@ -113,6 +123,27 @@ const postTagOptions = {
 let draftFilters = filterDefaults();
 const persist = (k, v) => localStorage.setItem('zm_' + k, JSON.stringify(v));
 const $ = id => document.getElementById(id);
+
+// Images from the companion web version, stored locally for offline use.
+// Uploaded post images continue to use their existing object URLs.
+function dishPhotoMarkup(dish, fallback = 'Dish photo placeholder') {
+    return dish.image
+        ? `<img class="dish-image" src="${dish.image}" alt="${dish.name}" loading="lazy">`
+        : `<span>${fallback}</span>`;
+}
+function setDishPhoto(element, dish) {
+    element.replaceChildren();
+    if (dish.image) {
+        const img = document.createElement('img');
+        img.src = dish.image;
+        img.alt = dish.name;
+        img.className = 'dish-image';
+        element.appendChild(img);
+    } else {
+        element.textContent = `${dish.name} photo placeholder`;
+    }
+}
+
 // Within each filter group: OR. Across groups: AND. Empty group: no restriction.
 const budgetMatches = (price, selected) => selected.length === 0 || selected.some(band => {
     if (band === '$1–20') return price >= 1 && price <= 20;
@@ -186,7 +217,7 @@ function renderFeedCards() {
                     data-action="feedDetails" data-id="${d.id}"
                     aria-label="View details for ${d.name}">
                     <div class="feed-feature-photo photo-slot">
-                        <span>${d.name} image placeholder</span>
+                        ${dishPhotoMarkup(d, d.name + " image placeholder")}
                     </div>
                     <div class="feed-feature-body">
                         <h3>${d.name}</h3>
@@ -238,7 +269,7 @@ function renderDiscover() {
     $('dishPrice').textContent = '$' + d.price.toFixed(2);
     $('dishRestaurant').textContent = `${d.restaurant} · ${d.location}`;
     $('dishSocial').textContent = '♥ Loved by 300 Anteaters';
-    $('dishPhoto').textContent = d.name + ' photo placeholder';
+    setDishPhoto($('dishPhoto'), d);
     $('wantButton').textContent = state.saved[d.id] ? 'Saved ✓' : '♥ Want it';
     renderNav();
 }
@@ -386,7 +417,7 @@ function renderSaved() {
                         >
                             <!-- Dish image -->
                             <div class="photo-slot mini">
-                                Photo
+                                ${dishPhotoMarkup(dish, 'Photo')}
                             </div>
                             <!-- Dish information -->
                             <div class="saved-copy">
@@ -569,12 +600,12 @@ function renderDetailReview(id) {
     const reviews = read('reviews', {});
     const dishReviews = reviews[id] || [];
     const latest = dishReviews[dishReviews.length - 1];
-    const rating = latest?.rating ?? 4.6;
-    const reviewText = latest?.body || '“Comfort food after a long lab. A little spicy!”';
+    const rating = latest?.rating ?? (id === 'tofu' ? 4.6 : null);
+    const reviewText = latest?.body || (id === 'tofu' ? '“Comfort food after a long lab. A little spicy!”' : 'No community reviews yet.');
     const ratingRow = document.querySelector('.detail-rating');
     const reviewBody = document.querySelector('.detail-review-text');
     if (ratingRow) {
-        ratingRow.innerHTML = `<span class="detail-stars">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5 - Math.round(rating))}</span><span>${rating.toFixed(1)} · ${18 + dishReviews.length} reviews</span>`;
+        ratingRow.innerHTML = rating === null ? '<span>Be the first to review</span>' : `<span class="detail-stars">${'★'.repeat(Math.round(rating))}${'☆'.repeat(5 - Math.round(rating))}</span><span>${rating.toFixed(1)} · ${id === 'tofu' ? 18 + dishReviews.length : dishReviews.length} reviews</span>`;
     }
     if (reviewBody) reviewBody.textContent = latest?.body ? `“${latest.body}”` : reviewText;
 }
@@ -583,6 +614,7 @@ function renderReview() {
     const dish = dishes.find(item => item.id === state.detailId);
     if (!dish) return;
     $('reviewDishName').textContent = dish.name;
+    setDishPhoto($('reviewDishPhoto'), dish);
     $('reviewDishRestaurant').textContent = `${dish.restaurant} · ${dish.location}`;
     $('reviewDishPhoto').textContent = `${dish.name} photo placeholder`;
     state.reviewRating = 4;
@@ -971,12 +1003,13 @@ document.addEventListener('click', e => {
                 showDetail(id);
                 break;
             case 'removeSaved':
-                if (state.saved[id])
+                if (state.saved[id]) {
                     delete state.saved[id];
                     persist('saved', state.saved);
                     renderSaved();
                     renderDiscover();
                     toast('Removed from Saved.');
+                }
                 break;
             case 'backFromDetail':
                 backFromDetail();
@@ -1136,9 +1169,16 @@ document.querySelectorAll('.overlay').forEach(v => v.addEventListener('click', e
     }
 }));
 let startX = 0, startY = 0;
+let suppressGestureClick = false;
+$('gestureCard').addEventListener('click', () => {
+    if (suppressGestureClick) { suppressGestureClick = false; return; }
+    const arr = activeDishes();
+    if (arr.length) showDetail(arr[state.index].id);
+});
 $('gestureCard').addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
 $('gestureCard').addEventListener('touchend', e => {
     let dx = e.changedTouches[0].clientX - startX, dy = e.changedTouches[0].clientY - startY; if (Math.abs(dx) > 75 && Math.abs(dx) > Math.abs(dy) * 1.4) {
+        suppressGestureClick = true;
         if (dx > 0) {
             let arr = activeDishes();
             if (arr.length) {

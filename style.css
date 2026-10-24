@@ -2331,3 +2331,98 @@ h2 {
     font-size: 11px;
     font-weight: 800;
 }
+
+
+/* ================================================================
+   INTEGRATION: reusable media from web.zip
+   Original Figma tokens and mobile interactions remain intact.
+   ================================================================ */
+.hero-placeholder { border: 0 !important; inset: 0 !important; background: transparent !important; }
+.hero-placeholder > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.icon-slot.mascot { border: 0; background: transparent; }
+.icon-slot.mascot img { width: 100%; height: 100%; object-fit: contain; }
+.dish-image { display: block; width: 100%; height: 100%; object-fit: cover; }
+.photo-slot:has(> .dish-image), .detail-photo:has(> .dish-image) {
+    background: transparent; border-style: solid;
+}
+#gestureCard { cursor: pointer; }
+#gestureCard:focus-visible, .feed-feature-card:focus-visible, .saved-dish-card:focus-visible {
+    outline: 3px solid var(--gold); outline-offset: 3px;
+}
+
+/* Intermediate widths: don't trap the app inside a 390px simulated phone. */
+@media (min-width: 431px) and (max-width: 899px) {
+    body { background: var(--cream); }
+    .app { width: 100%; max-width: 100%; margin: 0; height: 100dvh;
+        min-height: 540px; border: 0; border-radius: 0; box-shadow: none; }
+    .content, .detail-content, .post-content, .review-content,
+    .post-review-content { max-width: 690px; margin: 0 auto; }
+    .desktop-note { display: none; }
+}
+
+/* Desktop experience: adapt the companion web layout (sidebar + wider grids). */
+@media (min-width: 900px) {
+    body { background: var(--cream); }
+    .app { width: 100%; max-width: none; margin: 0; height: 100dvh;
+        min-height: 600px; border: 0; border-radius: 0; box-shadow: none; }
+    .desktop-note, .home-indicator, .status { display: none; }
+
+    /* Keep the mobile layout accessible where the flow does not use tabs. */
+    .scroller { top: 32px; bottom: 0; }
+    .content { max-width: 1100px; margin: 0 auto; padding: 0 36px 60px; gap: 18px; }
+    .detail-content, .review-content, .post-content, .post-review-content { max-width: 900px; margin: 0 auto; }
+    .detail-scroller, .review-scroller, .post-scroller, .post-review-scroller,
+    .post-success-scroller { top: 30px; bottom: 0; }
+
+    #discover .scroller, #saved .scroller, #me .scroller { left: 220px; }
+    #discover.feed-mode .discover-scroller { bottom: 94px; }
+    #discover .feed-search-dock { left: 220px; width: calc(100% - 220px); bottom: 0;
+        height: 80px; padding: 10px max(36px, calc((100% - 900px)/2)); border-top: 1px solid var(--line); }
+    #discover .feed-search-field { max-width: 720px; margin: 0 auto; }
+
+    #discover .bottom, #saved .bottom, #me .bottom {
+        position: absolute; left: 0; top: 0; bottom: 0; right: auto;
+        height: 100%; width: 220px; display: flex; flex-direction: column;
+        justify-content: flex-start; align-items: stretch; gap: 6px;
+        padding: 100px 14px 20px; border-top: 0; border-right: 1px solid var(--line);
+    }
+    #discover .bottom::before, #saved .bottom::before, #me .bottom::before {
+        content: 'ZotMunch'; position: absolute; top: 32px; left: 26px;
+        font: 600 27px/1.2 Fredoka, sans-serif; color: var(--blue);
+    }
+    .nav-item { width: 100%; min-width: 0; display: flex; flex-direction: row;
+        justify-content: flex-start; align-items: center; gap: 14px;
+        border-radius: 16px; padding: 11px 14px; font-size: 15px; }
+    .nav-item:hover { background: var(--sky); }
+    .nav-item.active { background: #fff0ab; }
+    .nav-icon { width: 28px; height: 28px; font-size: 17px; }
+
+    #discover .header-flex, #saved .header-flex { max-width: 850px; }
+    #discover .mascot, #saved .mascot { width: 95px; height: 95px; }
+    #discover .segmented { width: 360px; flex: none; }
+    #discover .filter-button { max-width: 600px; }
+    #swipeArea { max-width: 520px; margin: 0 auto; width: 100%; }
+    #swipeArea .dish-photo { height: clamp(250px, 34vh, 400px); }
+    #feedArea .feed-card-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+    #feedArea .feed-feature-photo { height: 235px; }
+    #savedList { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    #savedList .restaurant { margin: 0; align-self: start; }
+
+    /* The original mobile bottom sheet becomes a side drawer at desktop sizes. */
+    #filtersOverlay { align-items: stretch; justify-content: flex-end; }
+    #filtersOverlay .filter-sheet { width: min(440px, 100%); height: 100%; max-height: 100%;
+        border-radius: 26px 0 0 26px; }
+    .detail-photo { height: 330px; }
+    #welcome .hero { width: 50%; height: 100%; }
+    #welcome .welcome-scroll { top: 50%; left: 50%; right: 0; bottom: auto;
+        transform: translateY(-50%); max-height: 95%; }
+    #welcome .welcome-content { max-width: 420px; margin: auto; }
+    #preferences .preferences-title { max-width: 760px; left: calc(50% - 380px); }
+    #preferences .pref-scroller { top: 120px; }
+    #preferences .pref-scroller .content { max-width: 760px; }
+}
+@media (min-width: 1300px) {
+    #feedArea .feed-card-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
