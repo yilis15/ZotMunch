@@ -13,6 +13,7 @@
   <link href="responsive.css" rel="stylesheet"/>
   <script defer src="script.js">
   </script>
+  <script defer src="composer.js"></script>
  </head>
  <body>
   <div class="app" id="app">
@@ -369,12 +370,12 @@
                 <form id="reviewForm" class="review-form">
                     <fieldset class="review-rating">
                         <legend>How was it?</legend>
-                        <div class="review-stars" role="radiogroup" aria-label="Rating">
-                            <button type="button" data-action="rateReview" data-rating="1" aria-label="1 star" aria-checked="false">★</button>
-                            <button type="button" data-action="rateReview" data-rating="2" aria-label="2 stars" aria-checked="false">★</button>
-                            <button type="button" data-action="rateReview" data-rating="3" aria-label="3 stars" aria-checked="false">★</button>
-                            <button type="button" data-action="rateReview" data-rating="4" aria-label="4 stars" aria-checked="false">★</button>
-                            <button type="button" data-action="rateReview" data-rating="5" aria-label="5 stars" aria-checked="false">★</button>
+                        <div class="review-stars" role="group" aria-label="Rating">
+                            <button type="button" role="radio" data-action="rateReview" data-rating="1" aria-label="1 star" aria-checked="false">★</button>
+                            <button type="button" role="radio" data-action="rateReview" data-rating="2" aria-label="2 stars" aria-checked="false">★</button>
+                            <button type="button" role="radio" data-action="rateReview" data-rating="3" aria-label="3 stars" aria-checked="false">★</button>
+                            <button type="button" role="radio" data-action="rateReview" data-rating="4" aria-label="4 stars" aria-checked="false">★</button>
+                            <button type="button" role="radio" data-action="rateReview" data-rating="5" aria-label="5 stars" aria-checked="false">★</button>
                         </div>
                     </fieldset>
                     <label class="review-body">
@@ -429,14 +430,18 @@
                     <div id="postRestaurantSuggestions" class="post-restaurant-suggestions" hidden></div>
                     <p class="post-helper">Choose the restaurant and branch for this dish.</p>
                     <label class="post-field post-price-field">
-                        <span>Food price</span>
-                        <span class="post-price-input"><span>$</span><input id="postPrice" type="number" min="0" step="0.01" placeholder="0.00" inputmode="decimal" required></span>
+                        <span class="field-heading">Price <small>Required</small></span>
+                        <span class="post-price-input"><span>$</span><input id="postPrice" type="text" pattern="[0-9]+([.][0-9]{1,2})?" placeholder="0.00" inputmode="decimal" required></span>
+                        <small class="post-helper">USD · Price for one dish</small>
                     </label>
                     <label class="post-field post-review-field">
                         <span>What should other Anteaters know about this dish?</span>
                         <textarea id="postReviewText" placeholder="A little spicy, rich, and comforting." rows="5"></textarea>
                     </label>
-                    <button type="submit" class="btn gold post-continue">Continue</button>
+                    <section class="review-tags-panel"><button type="button" class="review-tags-heading" data-action="composerTags"><span><strong>Review dish tags</strong><small>Check the current tags, update anything that’s changed, or add what you noticed. You can publish without editing tags.</small><span id="composerTagSummary" class="tag-summary"></span></span><span class="review-tags-toggle">Optional ›</span></button></section>
+                    <p id="composerError" class="form-error" role="alert" hidden></p>
+                    <button type="submit" class="btn gold post-continue" id="composerSubmit">Publish post</button>
+                    <button type="button" class="text-button" data-action="storeDraft">Save draft and exit</button>
                 </form>
             </div>
         </div>
@@ -584,16 +589,21 @@
         Edit preferences
        </button>
       </div>
-      <div class="panel">
-       <p class="muted">
-        Other profile features are outside this vertical slice.
-       </p>
-      </div>
+      <section class="panel"><div class="field-heading"><h2>Made by you</h2><button class="text-button" data-action="myPosts">Manage posts</button></div><div id="journalPosts"></div></section>
+      <button class="journal-link" data-action="resumeDraft">✎　Draft <span>Continue your unpublished post　›</span></button>
+      <button class="journal-link" data-action="myReviews">☆　My reviews <span>›</span></button>
      </div>
     </div>
     <div class="bottom" id="meNav">
     </div>
    </div>
+
+<div class="view" id="dishTags"><div class="scroller composer-scroller"><div class="post-content">
+<header class="detail-header"><button class="back" data-action="cancelDishTags" aria-label="Back without saving">←</button><h2>Dish tags</h2></header>
+<h2>Add what you know.</h2><p class="muted">Review or update the dish’s tags. Every tag is optional.</p><p class="small muted">No selection means unknown. Unselected allergens do not mean allergen-free.</p>
+<div id="dishTagGroups"></div><div class="tag-footer"><button class="btn blue" data-action="commitDishTags" id="tagCommit">Done</button><button class="text-button" data-action="cancelDishTags">Cancel</button></div></div></div></div>
+<div class="view" id="myPosts"><div class="scroller composer-scroller"><div class="post-content"><header class="detail-header"><button class="back" data-action="journalBack" aria-label="Back">←</button><h2>My posted bites</h2></header><header class="review-hero"><div><p class="label">YOUR LITTLE FOOD STORIES</p><h1>Your shared<br>happy bites.</h1></div><img class="review-mascot" src="assets/mascots/cookie.png" alt=""></header><div id="postedBites"></div></div></div></div>
+<div class="view" id="myReviews"><div class="scroller composer-scroller"><div class="post-content"><header class="detail-header"><button class="back" data-action="journalBack" aria-label="Back">←</button><h2>My reviews</h2></header><div id="ownReviews"></div></div></div></div>
    <!-- Temporary filters: Figma 06 -->
    <div class="overlay" id="filtersOverlay" role="dialog" aria-modal="true" aria-labelledby="filtersTitle">
     <div class="sheet filter-sheet">
