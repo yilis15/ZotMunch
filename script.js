@@ -166,6 +166,7 @@ function filterSelectionCount() {
     return Object.values(state.filters).reduce((total, values) => total + values.length, 0);
 }
 function showPage(page) {
+    closeOverlays();
     state.page = page; document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === page)); if (page === 'discover')
         renderDiscover(); if (page === 'saved')
         renderSaved(); if (page === 'me')
@@ -244,7 +245,7 @@ function renderDiscover() {
     $('feedSearchDock').hidden = swipe;
     $('discover').classList.toggle('feed-mode', !swipe);
     $('discoverHeading').textContent = swipe ? 'A bite of surprise.' : 'Good bites around campus.';
-    $('discoverMascot').textContent = swipe ? 'Mascot / cookie' : 'Mascot / stamp';
+    $('discoverMascot').innerHTML = `<img src="assets/mascots/${swipe ? 'cookie' : 'orange-burst'}.png" alt="" aria-hidden="true">`;
 
     const filters = state.filters;
     const count = filterSelectionCount();
@@ -381,9 +382,7 @@ function renderSaved() {
     if (filteredDishes.length === 0) {
         $('savedList').innerHTML = `
             <div class="panel empty">
-                <div class="icon-slot">
-                    Saved empty-state illustration placeholder
-                </div>
+                <div class="empty-art"><img src="assets/mascots/sleep.png" alt="A resting Anteater"></div>
                 <h2>Nothing here yet.</h2>
                 <p class="small muted" style="margin:12px 0">
                     Save a dish to start your delicious little list.

@@ -1,0 +1,67 @@
+/* Unified presentation: web's full viewport, artwork and layout,
+   with the complete original prototype's interaction flows. */
+html { -webkit-text-size-adjust: 100%; }
+body { background: var(--cream); }
+.app { width:100%; max-width:none; height:100dvh; min-height:0; margin:0; border:0; border-radius:0; box-shadow:none; }
+.status, .home-indicator, .desktop-note { display:none; }
+.scroller { top:24px; bottom:76px; scrollbar-width:thin; }
+.scroller::-webkit-scrollbar { display:block; width:6px; }
+.scroller::-webkit-scrollbar-thumb { background:var(--line); border-radius:8px; }
+.preferences-title { top:24px; }
+#preferences .pref-scroller { top:90px; bottom:0; }
+.detail-scroller,.review-scroller,.post-scroller,.post-review-scroller,.post-success-scroller { top:24px; bottom:0; }
+#welcome .welcome-scroll { bottom:0; }
+.bottom { height:76px; padding-bottom:max(9px,env(safe-area-inset-bottom)); }
+.nav-icon { border:0; font-size:23px; }
+:focus-visible { outline:3px solid var(--blue); outline-offset:3px; }
+.icon-slot.mascot { flex-shrink:0; }
+.empty-art img { display:block; width:190px; max-width:100%; margin:0 auto 18px; }
+#savedList > .empty { grid-column:1 / -1; width:min(100%,440px); margin:20px auto; text-align:center; }
+.journal-banner { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:24px; border-radius:22px; background:var(--blue); color:var(--paper); }
+.journal-banner .label { color:var(--gold); margin-bottom:8px; }
+.journal-banner p:last-child { margin-top:10px; }
+.journal-banner img { width:96px; height:110px; object-fit:contain; }
+.photo-slot,.detail-photo { overflow:hidden; }
+.feed-feature-card { min-width:0; }
+.toast { max-width:calc(100% - 32px); }
+@media (min-width:600px) and (max-width:899px) {
+ #feedArea .feed-card-list { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; }
+}
+@media (min-width:900px) {
+ .scroller { top:32px; bottom:0; }
+ .content { padding:0 32px 36px; }
+ #discover .header-flex,#saved .header-flex { max-width:none; }
+ #discover .header-flex h1 { font-size:38px; line-height:1.15; }
+ #discover .content { display:grid; grid-template-columns:280px minmax(200px,1fr); align-content:start; gap:16px; }
+ #discover .header-flex,#swipeArea,#feedArea { grid-column:1 / -1; }
+ #discover .segmented { width:100%; }
+ #discover .filter-button { width:200px; max-width:100%; margin:0; align-self:center; }
+ #swipeArea { max-width:420px; }
+ #swipeArea .dish-photo { height:clamp(180px,31vh,320px); }
+ #discover .feed-search-dock { padding:12px 32px; }
+ #discover .feed-search-field { max-width:1036px; }
+ #detail .detail-content { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); gap:18px 32px; max-width:1100px; padding:0 32px 40px; }
+ #detail .detail-header { grid-column:1 / -1; }
+ #detail .detail-photo { grid-column:1; grid-row:2 / 7; width:100%; height:auto; aspect-ratio:4/3; position:sticky; top:0; border-radius:22px; }
+ #detail .detail-dish-name,#detail .detail-badges,#detail .detail-restaurant-card,#detail .detail-want { grid-column:2; }
+ #detail .detail-reviews { grid-column:1 / -1; }
+ #detail .detail-write-review { grid-column:2; }
+ .review-content,.post-content,.post-review-content { max-width:640px; }
+ #me .content { max-width:800px; }
+ #welcome .hero-placeholder img { width:80%; margin:auto; }
+ #welcome .hero { display:grid; place-items:center; }
+ #welcome .hero-placeholder { position:relative; width:100%; height:80%; }
+ #welcome .welcome-content { padding:24px; }
+ .toast { left:calc(50% + 110px); }
+}
+@media (max-width:430px) {
+ .app { height:100dvh; min-height:0; }
+ .journal-banner { padding:18px; }
+ .journal-banner h1 { font-size:26px; }
+ .journal-banner img { width:72px; }
+}
+@media (max-width:899px) {
+ #welcome .hero { height:40dvh; }
+ #welcome .welcome-scroll { top:calc(40dvh + 16px); bottom:0; }
+ #welcome .hero-placeholder img { width:100%; height:100%; }
+}
