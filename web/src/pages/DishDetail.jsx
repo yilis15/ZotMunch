@@ -88,9 +88,11 @@ export default function DishDetail() {
         <DishPhoto dish={dish} className="detail__photo" />
 
         <div className="detail__info">
-          <h2 className="title">{dish.name}</h2>
+          <div data-tour="identity"><h2 className="title">{dish.name}</h2>
+          <p className="meta">{restaurant.name} · {restaurant.address?.split(' · ')[0]}</p>
           <div className="chips">
             <PricePill price={dish.price} />
+            {dish.distance != null && <Chip>{formatMiles(dish.distance)}</Chip>}
             {dish.spiceLevel > 0 && (
               <span className="chip chip--icon">
                 <SpiceLevel level={dish.spiceLevel} />
@@ -98,7 +100,7 @@ export default function DishDetail() {
             )}
           </div>
 
-          <section className="place-card">
+          </div><section className="place-card">
             <div className="place-card__head">
               <Icon name="pin" />
               <div>

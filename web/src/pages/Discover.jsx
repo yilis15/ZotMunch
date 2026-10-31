@@ -9,19 +9,29 @@ import FilterSheet from '../components/FilterSheet'
 import SwipeDeck from '../components/SwipeDeck'
 import Icon from '../components/Icon'
 import { Chip, EmptyState, ErrorNote, Hero, Loader, Segmented } from '../components/ui'
+import { useTour } from '../lib/tour'
 
 const TOAST_MS = 2500
 
 export default function Discover() {
   const { userId, preferenceTagIds, tags, tagsById, filters, setFilters } = useApp()
   const navigate = useNavigate()
+  const tour = useTour()
   const [params, setParams] = useSearchParams()
   const mode = params.get('mode') === 'feed' ? 'feed' : 'swipe'
 
   const [dishes, setDishes] = useState(null)
   const [decided, setDecided] = useState(new Set()) // skipped or wanted, now or earlier
   const [error, setError] = useState(null)
-  const [showFilters, setShowFilters] = useState(false)
+  const [manualFilters, setShowFilters] = useState(false)
+  const showFilters = manualFilters || params.get('filters') === '1'
+  const closeFilters = () => {
+    setShowFilters(false)
+    const next = new URLSearchParams(params)
+    next.delete('filters')
+    setParams(next, { replace: true })
+    if (tour.step === 4) tour.exit()
+  }
   const [query, setQuery] = useState('')
   const [toast, setToast] = useState(null)
   const toastTimer = useRef()
@@ -52,6 +62,7 @@ export default function Discover() {
     (dish, action) => {
       setDecided((s) => new Set(s).add(dish.id))
       recordSwipe(userId, dish.id, action, 'swipe').catch(setError)
+      tour.practice(action)
       if (action === 'want') {
         wantDish(userId, dish.id).catch(setError)
         clearTimeout(toastTimer.current)
@@ -59,10 +70,13 @@ export default function Discover() {
         toastTimer.current = setTimeout(() => setToast(null), TOAST_MS)
       }
     },
-    [userId],
+    [userId, tour],
   )
 
-  const open = (dish) => navigate(`/dish/${dish.id}`, { state: { from: mode } })
+  const open = (dish) => {
+    tour.practice('detail')
+    navigate(`/dish/${dish.id}`, { state: { from: mode } })
+  }
 
   const n = filterCount(filters)
   const activeChips = [
@@ -137,9 +151,11 @@ export default function Discover() {
             mascot="mug"
             title="You've seen every bite for now."
             actions={
+              <>
               <button type="button" className="btn btn--gold btn--block" onClick={() => setParams({ mode: 'feed' })}>
                 Browse the Feed
               </button>
+              </>
             }
           >
             New dishes show up as Anteaters share them. Your picks are waiting in Saved.
@@ -149,7 +165,7 @@ export default function Discover() {
         <Feed dishes={visible} query={query} setQuery={setQuery} />
       )}
 
-      {showFilters && <FilterSheet dishes={rankForUser(dishes, preferenceTagIds, tagsById)} onClose={() => setShowFilters(false)} />}
+      {showFilters && <FilterSheet dishes={rankForUser(dishes, preferenceTagIds, tagsById)} onClose={closeFilters} />}
     </div>
   )
 }

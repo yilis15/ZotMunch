@@ -2,30 +2,39 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { DishChips, DishMeta, PricePill } from './DishCard'
 import { DishPhoto } from './ui'
+import { useTour } from '../lib/tour'
 
 const SWIPE_DISTANCE = 100
 const TAP_SLOP = 12 // a finger tap usually wobbles a few pixels
-const FLY_MS = 220
+const FLY_MS = 300
 
 export default function SwipeDeck({ dishes, onSkip, onWant, onOpen, toast }) {
+  const tour = useTour()
   const [dx, setDx] = useState(0)
   const [leaving, setLeaving] = useState(null) // 'left' | 'right'
   const start = useRef(null)
+  const flyTimer = useRef(null)
+  useEffect(() => {
+    setLeaving(null)
+    setDx(0)
+    return () => clearTimeout(flyTimer.current)
+  }, [tour.step])
   const top = dishes[0]
   const next = dishes[1]
 
   const decide = useCallback(
     (direction) => {
       if (!top || leaving) return
+      if (tour.step !== null && (tour.result || !((tour.step === 1 && direction === 'left') || (tour.step === 2 && direction === 'right')))) return
       setLeaving(direction)
-      setTimeout(() => {
+      flyTimer.current = setTimeout(() => {
         setLeaving(null)
         setDx(0)
         if (direction === 'right') onWant(top)
         else onSkip(top)
       }, FLY_MS)
     },
-    [top, leaving, onSkip, onWant],
+    [top, leaving, onSkip, onWant, tour],
   )
 
   useEffect(() => {
@@ -61,6 +70,7 @@ export default function SwipeDeck({ dishes, onSkip, onWant, onOpen, toast }) {
     else setDx(0)
   }
   const onClick = () => {
+    if (tour.step !== null && tour.step !== 3) return
     if (!dragged.current && !leaving) onOpen(top)
   }
 
@@ -91,6 +101,9 @@ export default function SwipeDeck({ dishes, onSkip, onWant, onOpen, toast }) {
           onPointerCancel={onPointerUp}
           onClick={onClick}
           aria-label={`${top.name} at ${top.restaurant.name}`}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } }}
         >
           {toast}
           <span className="swipe-card__stamp swipe-card__stamp--want" style={{ opacity: Math.max(0, offset / SWIPE_DISTANCE) }}>
@@ -113,13 +126,13 @@ export default function SwipeDeck({ dishes, onSkip, onWant, onOpen, toast }) {
         </article>
       </div>
       <div className="deck__actions">
-        <button type="button" className="btn btn--outline" onClick={() => decide('left')}>
+        <button data-tour="skip" type="button" className="btn btn--outline" onClick={() => decide('left')}>
           × Skip
         </button>
-        <button type="button" className="btn btn--soft" onClick={() => onOpen(top)}>
+        <button data-tour="view" type="button" className="btn btn--soft" onClick={() => onOpen(top)}>
           View dish
         </button>
-        <button type="button" className="btn btn--gold" onClick={() => decide('right')}>
+        <button data-tour="want" type="button" className="btn btn--gold" onClick={() => decide('right')}>
           <span aria-hidden="true">❤️</span> Want it
         </button>
       </div>

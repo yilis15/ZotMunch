@@ -1,6 +1,13 @@
 // Page frame: bottom tab bar on phones, left sidebar on wider screens.
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import Icon from './Icon'
+import GuidedTour from './GuidedTour'
+import { useTour } from '../lib/tour'
+
+function TourButton() {
+  const tour = useTour()
+  return <button type="button" data-tour="restart" className="link-btn tour-replay" onClick={tour.start}>Replay guide</button>
+}
 
 const TABS = [
   ['/', 'discover', 'Discover'],
@@ -14,7 +21,7 @@ export default function AppShell() {
   const isReviewPage = pathname.endsWith('/review')
 
   return (
-    <div className={`shell${isReviewPage ? ' shell--review' : ''}`}>
+    <GuidedTour><div className={`shell${isReviewPage ? ' shell--review' : ''}`}>
       <nav className="nav" aria-label="Main">
         <p className="nav__logo wordmark">
           Zot<span>Munch</span>
@@ -30,7 +37,8 @@ export default function AppShell() {
       </nav>
       <main className="shell__main">
         <Outlet />
+        <TourButton />
       </main>
-    </div>
+    </div></GuidedTour>
   )
 }
