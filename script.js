@@ -12,6 +12,8 @@ const dishes = [
         restaurant: 'Bluebird Café',
         location: 'Campus Plaza',
         price: 12.50,
+        publishedAt: '2026-11-10T09:00:00Z',
+        savedCount: 240,
         distance: 0.4,
         kind: 'Cafe',
         desc: 'Golden pancakes with a little sweetness.'
@@ -26,6 +28,8 @@ const dishes = [
         restaurant: 'Little Wok',
         location: 'University Center',
         price: 13,
+        publishedAt: '2026-11-08T10:00:00Z',
+        savedCount: 300,
         distance: 1.3,
         kind: 'Chinese',
         desc: 'Bold, warm and a little spicy.'
@@ -40,6 +44,8 @@ const dishes = [
         restaurant: 'Noodle Club',
         location: 'Campus Plaza',
         price: 16,
+        publishedAt: '2026-11-12T12:00:00Z',
+        savedCount: 180,
         distance: 2.2,
         kind: 'Japanese',
         desc: 'A comforting bowl to slow down with.'
@@ -53,6 +59,8 @@ const dishes = [
         restaurant: 'Bluebird Café',
         location: 'Campus Plaza',
         price: 12,
+        publishedAt: '2026-11-13T10:00:00Z',
+        savedCount: 110,
         distance: 2.7,
         kind: 'Cafe',
         desc: 'Fresh and easy between classes.'
@@ -66,6 +74,8 @@ const dishes = [
         restaurant: 'Little Wok',
         location: 'University Center',
         price: 14,
+        publishedAt: '2026-11-07T13:00:00Z',
+        savedCount: 92,
         distance: 1.3,
         kind: 'Chinese',
         desc: 'Savory noodles for a happy bite.'
@@ -73,10 +83,19 @@ const dishes = [
     {
         id: 'chicken', cuisine: 'Chinese', foodType: 'Rice', flavor: 'Savory',
         name: 'Chicken rice', restaurant: 'Campus Kitchen', location: 'Near UCI',
-        price: 14.50, distance: 1.1, kind: 'Chinese',
+        price: 14.50, publishedAt: '2026-11-11T15:00:00Z', savedCount: 150,
+        distance: 1.1, kind: 'Chinese',
         image: 'assets/food/chicken-rice.jpg',
         desc: 'A rice dish featured in the companion web prototype.'
     }
+];
+const feedSorts = [
+    { key: 'price-asc', group: 'Price', heading: 'Price: Low to high', label: 'Low to high', field: 'price', direction: 'asc', mark: '$ ↑' },
+    { key: 'price-desc', group: 'Price', heading: 'Price: High to low', label: 'High to low', field: 'price', direction: 'desc', mark: '$ ↓' },
+    { key: 'date-desc', group: 'Date', heading: 'Date: Newest first', label: 'Newest first', field: 'publishedAt', direction: 'desc', mark: '↓' },
+    { key: 'date-asc', group: 'Date', heading: 'Date: Oldest first', label: 'Oldest first', field: 'publishedAt', direction: 'asc', mark: '↑' },
+    { key: 'saved-desc', group: 'Popularity', heading: 'Popularity: Most saved', label: 'Most saved', field: 'savedCount', direction: 'desc', mark: '↓' },
+    { key: 'saved-asc', group: 'Popularity', heading: 'Popularity: Fewest saved', label: 'Fewest saved', field: 'savedCount', direction: 'asc', mark: '↑' }
 ];
 
 const read = (k, fallback) => {
@@ -104,11 +123,19 @@ const state = {
     profileAvatar: read('profileAvatar', 'assets/mascots/mug.png'),
     profileAvatarDraft: 'assets/mascots/mug.png',
     filters: normalizeFilters(read('filters', filterDefaults())),
-    savedFilter: 'all', detailId: null, editing: false,
+    savedFilter: 'all', savedSelecting: false, selectedSaved: new Set(),
+    feedSortKey: 'saved-desc', detailId: null, editing: false,
     reviewRating: 4, reviewPhotos: [],
     postPhotos: [], postRestaurantBranch: null, postMatch: null,
     postMatchDismissed: '', postTagsExpanded: false, postTags: []
 };
+let savedRemovalBatch = [];
+let savedUndoTimer = null;
+let savedUndoRemaining = 8000;
+let savedUndoStartedAt = 0;
+let savedUndoPaused = false;
+let savedRemoveOpener = null;
+let feedSortOpener = null;
 const profileAvatars = [
     ['Hello', 'assets/mascots/hero.png'],
     ['Mug', 'assets/mascots/mug.png'],
@@ -184,6 +211,9 @@ function filterSelectionCount() {
 }
 function showPage(page) {
     closeOverlays();
+    closeSavedRemove(false);
+    closeFeedSort(false);
+    hideSavedUndo();
     state.page = page;
     document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === page));
     if (page === 'discover') renderDiscover();
@@ -227,28 +257,38 @@ function toggleChoice(key, v) {
 // Feed cards follow the Figma layout. Tapping the card opens its details.
 function renderFeedCards() {
     const query = state.feedQuery.trim().toLowerCase();
+    const sort = feedSorts.find(option => option.key === state.feedSortKey) || feedSorts[4];
     const filtered = activeDishes().filter(d =>
         `${d.name} ${d.restaurant} ${d.kind} ${d.desc}`.toLowerCase().includes(query)
     );
+    const sorted = filtered.slice().sort((a, b) => {
+        const rawA = a[sort.field];
+        const rawB = b[sort.field];
+        const valueA = sort.field === 'publishedAt' ? Date.parse(rawA) : rawA;
+        const valueB = sort.field === 'publishedAt' ? Date.parse(rawB) : rawB;
+        const missingA = rawA == null || (sort.field === 'publishedAt' && Number.isNaN(valueA));
+        const missingB = rawB == null || (sort.field === 'publishedAt' && Number.isNaN(valueB));
+        if (missingA !== missingB) return missingA ? 1 : -1;
+        if (!missingA && valueA !== valueB) {
+            return (valueA - valueB) * (sort.direction === 'asc' ? 1 : -1);
+        }
+        return String(a.id).localeCompare(String(b.id));
+    });
 
     const feedArea = $('feedArea');
-    if (!filtered.length) {
-        feedArea.innerHTML = `
-            <div class="panel empty">
-                <h2>No bites found.</h2>
-                <p class="small muted">Try another search or change your filters.</p>
-                <button class="btn blue" data-action="openFilters">Adjust filters</button>
-            </div>`;
-        return;
-    }
-
     feedArea.innerHTML = `
         <div class="feed-section-heading">
-            <h2>Popular with Anteaters</h2>
-            <button class="feed-see-all" data-action="seeAll">See all</button>
+            <div class="feed-sort-title">
+                <h2 id="feedSortHeading">${sort.heading}</h2>
+                <span class="feed-sort-count">${sorted.length} ${sorted.length === 1 ? 'dish' : 'dishes'}</span>
+            </div>
+            <button class="feed-sort-trigger" id="feedSortButton" type="button"
+                aria-haspopup="dialog" aria-expanded="false" aria-controls="feedSortOverlay">
+                <span aria-hidden="true">↕</span> Sort <span aria-hidden="true">⌄</span>
+            </button>
         </div>
-        <div class="feed-card-list">
-            ${filtered.map(d => `
+        ${sorted.length ? `<div class="feed-card-list">
+            ${sorted.map(d => `
                 <article class="feed-feature-card" role="button" tabindex="0"
                     data-action="feedDetails" data-id="${d.id}"
                     aria-label="View details for ${d.name}">
@@ -260,14 +300,21 @@ function renderFeedCards() {
                         <p class="feed-feature-location">
                             ${d.restaurant} · ${d.location} &nbsp; ${d.distance.toFixed(1)} mile
                         </p>
-                        <p class="feed-feature-loved">♥ Loved by 300 Anteaters</p>
+                        <p class="feed-feature-loved">♥ Saved by ${d.savedCount ?? 0} Anteaters</p>
+                        <p class="feed-feature-date">${d.publishedAt ? `Posted ${new Date(d.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}` : 'Date unavailable'}</p>
                         <div class="feed-feature-footer">
                             <span class="feed-feature-tag">${d.id === 'pancake' ? 'sweet' : d.kind}</span>
                             <strong class="feed-feature-price">$${d.price.toFixed(2)}</strong>
                         </div>
                     </div>
                 </article>`).join('')}
-        </div>`;
+        </div>` : `
+            <div class="panel empty">
+                <h2>No bites found.</h2>
+                <p class="small muted">Try another search or change your filters.</p>
+                <button class="btn blue" data-action="openFilters">Adjust filters</button>
+            </div>`}`;
+    renderFeedSortOptions();
 }
 
 function renderDiscover() {
@@ -518,6 +565,7 @@ function toggleSavedDish(id) {
     if (state.saved[id]) {
         // Remove from Saved List
         delete state.saved[id];
+        state.selectedSaved.delete(id);
         toast('Removed from Saved.');
     } else {
         // Add to Saved List
@@ -536,7 +584,6 @@ function toggleSavedDish(id) {
     renderSaved();
 }
 function renderSaved() {
-
     // Get all saved dishes
     const allSavedDishes = dishes.filter(
         dish => state.saved[dish.id]
@@ -568,6 +615,23 @@ function renderSaved() {
 
     $('savedCount').textContent =
         `${restaurantCount} spots saved · ${notYetCount} still to try`;
+
+    state.selectedSaved = new Set(
+        [...state.selectedSaved].filter(id => Boolean(state.saved[id]))
+    );
+    $('saved').classList.toggle('saved-selecting', state.savedSelecting);
+    $('savedSelectionControls').hidden = allSavedDishes.length === 0;
+    $('savedSelectionHint').textContent = state.savedSelecting
+        ? 'Select dishes to remove'
+        : 'Your saved dishes, all in one place.';
+    $('savedSelectToggle').textContent = state.savedSelecting ? 'Done' : 'Select';
+    const visibleSelectedCount = filteredDishes.filter(dish =>
+        state.selectedSaved.has(dish.id)
+    ).length;
+    $('savedSelectAll').hidden = !state.savedSelecting || filteredDishes.length === 0;
+    $('savedSelectAll').textContent =
+        visibleSelectedCount === filteredDishes.length ? 'Deselect all' : 'Select all';
+    updateSavedSelection();
 
     // Update tabs
     $('savedTabs').querySelectorAll('button').forEach(button => {
@@ -612,6 +676,14 @@ function renderSaved() {
                 const tried = state.saved[dish.id].tried;
                 return `
                     <div class="saved-row">
+                        <input
+                            class="saved-selection-checkbox"
+                            type="checkbox"
+                            data-saved-selection="${dish.id}"
+                            aria-label="Select ${dish.name} for removal"
+                            ${state.selectedSaved.has(dish.id) ? 'checked' : ''}
+                            ${state.savedSelecting ? '' : 'hidden'}
+                        >
                         <!-- Clickable dish card -->
                         <div
                             class="saved-dish-card"
@@ -688,6 +760,155 @@ function renderSaved() {
             `;
         }).join('');
     renderNav();
+}
+function updateSavedSelection() {
+    const count = [...state.selectedSaved].filter(id => Boolean(state.saved[id])).length;
+    $('savedSelectionCount').textContent = `${count} selected`;
+    $('removeSelectedSaved').textContent = count === 1 ? 'Remove 1 dish' : `Remove ${count} dishes`;
+    $('removeSelectedSaved').disabled = count === 0;
+    $('savedSelectionDock').hidden =
+        state.page !== 'saved' || !state.savedSelecting ||
+        !dishes.some(dish => state.saved[dish.id]) || !$('savedUndoToast').hidden;
+    document.querySelectorAll('.saved-row').forEach(row => {
+        row.classList.toggle(
+            'selected',
+            Boolean(row.querySelector('.saved-selection-checkbox')?.checked)
+        );
+    });
+}
+function setDialogBackgroundInert(value) {
+    document.querySelectorAll('.app > .view, .app > .toast, .app > .home-indicator')
+        .forEach(element => { element.inert = value; });
+}
+function openSavedRemove() {
+    const selected = dishes.filter(dish =>
+        state.selectedSaved.has(dish.id) && state.saved[dish.id]
+    );
+    if (!selected.length) return;
+    savedRemoveOpener = document.activeElement;
+    const count = selected.length;
+    const restaurantCount = new Set(selected.map(dish => dish.restaurant)).size;
+    const noun = count === 1 ? 'dish' : 'dishes';
+    $('savedRemoveTitle').textContent = `Remove ${count} ${noun}?`;
+    $('savedRemoveDescription').textContent = count === 1
+        ? 'Are you sure you want to remove this dish from your saved list?'
+        : 'Are you sure you want to remove these dishes from your saved list?';
+    $('confirmSavedRemove').textContent = `Remove ${count} ${noun}`;
+    $('savedRemovalSummary').innerHTML = `
+        <div class="saved-summary-thumbnails">
+            ${selected.slice(0, 3).map(dish => `<img src="${dish.image || ''}" alt="">`).join('')}
+        </div>
+        <div>${count} ${noun} selected
+            <small>From ${restaurantCount} ${restaurantCount === 1 ? 'restaurant' : 'restaurants'}</small>
+        </div>`;
+    $('savedRemoveOverlay').hidden = false;
+    setDialogBackgroundInert(true);
+    $('cancelSavedRemove').focus({ preventScroll: true });
+}
+function closeSavedRemove(restoreFocus = true) {
+    if ($('savedRemoveOverlay').hidden) return;
+    $('savedRemoveOverlay').hidden = true;
+    setDialogBackgroundInert(false);
+    if (restoreFocus) {
+        const target = savedRemoveOpener?.isConnected ? savedRemoveOpener : $('savedSelectToggle');
+        target?.focus({ preventScroll: true });
+    }
+}
+function confirmSavedRemoval() {
+    savedRemovalBatch = dishes
+        .filter(dish => state.selectedSaved.has(dish.id) && state.saved[dish.id])
+        .map(dish => ({ id: dish.id, save: { ...state.saved[dish.id] } }));
+    if (!savedRemovalBatch.length) {
+        closeSavedRemove();
+        return;
+    }
+    savedRemovalBatch.forEach(({ id }) => delete state.saved[id]);
+    state.selectedSaved.clear();
+    persist('saved', state.saved);
+    closeSavedRemove(false);
+    renderSaved();
+    renderDiscover();
+    showSavedUndo();
+    $('savedNav').querySelector('.nav-item')?.focus({ preventScroll: true });
+}
+function showSavedUndo() {
+    clearTimeout(savedUndoTimer);
+    savedUndoRemaining = 8000;
+    savedUndoStartedAt = performance.now();
+    savedUndoPaused = false;
+    const count = savedRemovalBatch.length;
+    $('savedUndoMessage').textContent = `${count} ${count === 1 ? 'dish' : 'dishes'} removed`;
+    $('savedUndoToast').hidden = false;
+    const progress = document.querySelector('.saved-undo-progress');
+    progress.style.animation = 'none';
+    void progress.offsetWidth;
+    progress.style.animation = '';
+    savedUndoTimer = setTimeout(hideSavedUndo, savedUndoRemaining);
+    updateSavedSelection();
+}
+function hideSavedUndo() {
+    clearTimeout(savedUndoTimer);
+    savedUndoTimer = null;
+    $('savedUndoToast').hidden = true;
+    savedUndoRemaining = 8000;
+    savedUndoPaused = false;
+    savedRemovalBatch = [];
+    updateSavedSelection();
+}
+function pauseSavedUndo() {
+    if ($('savedUndoToast').hidden || savedUndoPaused) return;
+    savedUndoPaused = true;
+    clearTimeout(savedUndoTimer);
+    savedUndoRemaining = Math.max(0, savedUndoRemaining - (performance.now() - savedUndoStartedAt));
+}
+function resumeSavedUndo() {
+    if ($('savedUndoToast').hidden || !savedUndoPaused ||
+        $('savedUndoToast').matches(':hover, :focus-within')) return;
+    savedUndoPaused = false;
+    savedUndoStartedAt = performance.now();
+    savedUndoTimer = setTimeout(hideSavedUndo, savedUndoRemaining);
+}
+function undoSavedRemoval() {
+    if (!savedRemovalBatch.length) return;
+    const count = savedRemovalBatch.length;
+    savedRemovalBatch.forEach(({ id, save }) => { state.saved[id] = save; });
+    persist('saved', state.saved);
+    hideSavedUndo();
+    renderSaved();
+    renderDiscover();
+    toast(`${count} ${count === 1 ? 'dish' : 'dishes'} restored to Saved.`);
+    $('savedSelectToggle').focus({ preventScroll: true });
+}
+function renderFeedSortOptions() {
+    $('feedSortOptions').innerHTML = ['Price', 'Date', 'Popularity'].map(group => `
+        <div class="feed-sort-group">
+            <h3>${group === 'Popularity' ? 'Popularity · saves' : group}</h3>
+            ${feedSorts.filter(option => option.group === group).map(option => `
+                <button class="feed-sort-option" type="button" role="radio"
+                    aria-checked="${state.feedSortKey === option.key}" data-feed-sort="${option.key}">
+                    <span class="feed-sort-mark" aria-hidden="true">${option.mark}</span>
+                    <span>${option.heading}</span>
+                    ${state.feedSortKey === option.key ? '<span class="feed-sort-check" aria-hidden="true">✓</span>' : ''}
+                </button>`).join('')}
+        </div>`).join('');
+}
+function openFeedSort() {
+    feedSortOpener = document.activeElement;
+    renderFeedSortOptions();
+    $('feedSortOverlay').hidden = false;
+    $('feedSortButton')?.setAttribute('aria-expanded', 'true');
+    setDialogBackgroundInert(true);
+    $('feedSortOptions').querySelector('[aria-checked="true"]')?.focus({ preventScroll: true });
+}
+function closeFeedSort(restoreFocus = true) {
+    if ($('feedSortOverlay').hidden) return;
+    $('feedSortOverlay').hidden = true;
+    $('feedSortButton')?.setAttribute('aria-expanded', 'false');
+    setDialogBackgroundInert(false);
+    const trigger = restoreFocus && feedSortOpener?.isConnected
+        ? feedSortOpener
+        : restoreFocus ? $('feedSortButton') : null;
+    trigger?.focus({ preventScroll: true });
 }
 function openOverlay(id) { $(id + 'Overlay').classList.add('show'); }
 function closeOverlays() { document.querySelectorAll('.overlay').forEach(x => x.classList.remove('show')); }
@@ -1084,6 +1305,8 @@ function publishPost() {
             restaurant: post.restaurant,
             location: post.location,
             price: post.price,
+            publishedAt: post.createdAt,
+            savedCount: 0,
             distance: 0,
             kind: 'Other',
             desc: body,
@@ -1228,11 +1451,10 @@ document.addEventListener('click', e => {
                 break;
             case 'removeSaved':
                 if (state.saved[id]) {
-                    delete state.saved[id];
-                    persist('saved', state.saved);
+                    state.savedSelecting = true;
+                    state.selectedSaved = new Set([id]);
                     renderSaved();
-                    renderDiscover();
-                    toast('Removed from Saved.');
+                    openSavedRemove();
                 }
                 break;
             case 'backFromDetail':
@@ -1367,6 +1589,103 @@ $('postPhotosInput').addEventListener('change', event => {
 $('feedSearch').addEventListener('input', event => {
     state.feedQuery = event.target.value;
     renderFeedCards();
+});
+$('savedSelectToggle').addEventListener('click', () => {
+    state.savedSelecting = !state.savedSelecting;
+    state.selectedSaved.clear();
+    hideSavedUndo();
+    renderSaved();
+});
+$('savedSelectAll').addEventListener('click', () => {
+    const visible = dishes.filter(dish =>
+        state.saved[dish.id] &&
+        (state.savedFilter === 'all' ||
+            (state.savedFilter === 'tried' ? state.saved[dish.id].tried : !state.saved[dish.id].tried))
+    );
+    const allSelected = visible.length > 0 &&
+        visible.every(dish => state.selectedSaved.has(dish.id));
+    visible.forEach(dish => {
+        if (allSelected) state.selectedSaved.delete(dish.id);
+        else state.selectedSaved.add(dish.id);
+    });
+    renderSaved();
+});
+$('savedList').addEventListener('change', event => {
+    const checkbox = event.target.closest('[data-saved-selection]');
+    if (!checkbox) return;
+    if (checkbox.checked) state.selectedSaved.add(checkbox.dataset.savedSelection);
+    else state.selectedSaved.delete(checkbox.dataset.savedSelection);
+    const visible = dishes.filter(dish =>
+        state.saved[dish.id] &&
+        (state.savedFilter === 'all' ||
+            (state.savedFilter === 'tried' ? state.saved[dish.id].tried : !state.saved[dish.id].tried))
+    );
+    const selectedCount = visible.filter(dish => state.selectedSaved.has(dish.id)).length;
+    $('savedSelectAll').textContent =
+        selectedCount === visible.length ? 'Deselect all' : 'Select all';
+    updateSavedSelection();
+});
+$('removeSelectedSaved').addEventListener('click', openSavedRemove);
+$('closeSavedRemove').addEventListener('click', () => closeSavedRemove());
+$('cancelSavedRemove').addEventListener('click', () => closeSavedRemove());
+$('confirmSavedRemove').addEventListener('click', confirmSavedRemoval);
+$('savedRemoveOverlay').addEventListener('click', event => {
+    if (event.target.matches('[data-dismiss-saved-remove]')) closeSavedRemove();
+});
+$('undoSavedButton').addEventListener('click', undoSavedRemoval);
+$('savedUndoToast').addEventListener('mouseenter', pauseSavedUndo);
+$('savedUndoToast').addEventListener('mouseleave', resumeSavedUndo);
+$('savedUndoToast').addEventListener('focusin', pauseSavedUndo);
+$('savedUndoToast').addEventListener('focusout', () => requestAnimationFrame(resumeSavedUndo));
+$('feedArea').addEventListener('click', event => {
+    if (event.target.closest('#feedSortButton')) openFeedSort();
+});
+$('closeFeedSort').addEventListener('click', () => closeFeedSort());
+$('feedSortOverlay').addEventListener('click', event => {
+    if (event.target.matches('[data-dismiss-feed-sort]')) closeFeedSort();
+});
+$('feedSortOptions').addEventListener('click', event => {
+    const option = event.target.closest('[data-feed-sort]');
+    if (!option) return;
+    state.feedSortKey = option.dataset.feedSort;
+    closeFeedSort(false);
+    renderFeedCards();
+    $('discover').querySelector('.scroller').scrollTop = 0;
+    $('feedSortButton')?.focus({ preventScroll: true });
+});
+$('feedSortOptions').addEventListener('keydown', event => {
+    const options = [...$('feedSortOptions').querySelectorAll('[data-feed-sort]')];
+    const index = options.indexOf(document.activeElement);
+    if (!['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? options.length - 1 :
+        (index + (['ArrowDown', 'ArrowRight'].includes(event.key) ? 1 : -1) + options.length) % options.length;
+    options[next]?.focus();
+});
+document.addEventListener('keydown', event => {
+    const removeOpen = !$('savedRemoveOverlay').hidden;
+    const sortOpen = !$('feedSortOverlay').hidden;
+    const dialog = removeOpen
+        ? $('savedRemoveOverlay').querySelector('[role="dialog"]')
+        : sortOpen ? $('feedSortOverlay').querySelector('[role="dialog"]') : null;
+    if (!dialog) return;
+    if (event.key === 'Escape') {
+        event.preventDefault();
+        if (removeOpen) closeSavedRemove();
+        else closeFeedSort();
+        return;
+    }
+    if (event.key !== 'Tab') return;
+    const focusable = [...dialog.querySelectorAll('button:not([disabled])')];
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+    }
 });
 document.addEventListener('keydown', event => {
     if (event.key !== 'Enter' && event.key !== ' ') {

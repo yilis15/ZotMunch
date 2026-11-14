@@ -206,7 +206,7 @@
         <button class="btn gold" data-action="want" id="wantButton">♥ Want it</button>
        </div>
       </div>
-      <section id="feedArea" class="feed-area" style="display:none" aria-label="Popular dishes">
+      <section id="feedArea" class="feed-area" style="display:none" aria-label="Sorted dishes">
       </section>
      </div>
     </div>
@@ -570,9 +570,26 @@
       </div>
       <p class="muted small" id="savedCount">
       </p>
+      <div class="saved-selection-controls" id="savedSelectionControls" hidden>
+       <p id="savedSelectionHint">Your saved dishes, all in one place.</p>
+       <div>
+        <button class="text-button" id="savedSelectAll" type="button">Select all</button>
+        <button class="btn outline btn-sm" id="savedSelectToggle" type="button">Select</button>
+       </div>
+      </div>
       <div id="savedList">
       </div>
      </div>
+    </div>
+    <div class="saved-selection-dock" id="savedSelectionDock" hidden>
+     <strong id="savedSelectionCount">0 selected</strong>
+     <button class="btn danger btn-sm" id="removeSelectedSaved" type="button" disabled>Remove 0 dishes</button>
+    </div>
+    <div class="saved-undo-toast" id="savedUndoToast" role="status" aria-live="polite" hidden>
+     <span class="saved-undo-check" aria-hidden="true">✓</span>
+     <span id="savedUndoMessage">0 dishes removed</span>
+     <button id="undoSavedButton" type="button">Undo <span aria-hidden="true">↶</span></button>
+     <span class="saved-undo-progress" aria-hidden="true"></span>
     </div>
     <div class="bottom" id="savedNav">
     </div>
@@ -681,6 +698,36 @@
       <button class="btn gold" type="button" data-action="applyFilters">Show dishes</button>
      </footer>
     </div>
+   </div>
+   <div class="saved-remove-overlay" id="savedRemoveOverlay" hidden>
+    <button class="saved-remove-scrim" type="button" data-dismiss-saved-remove aria-label="Close removal confirmation"></button>
+    <section class="saved-remove-dialog" role="dialog" aria-modal="true" aria-labelledby="savedRemoveTitle" aria-describedby="savedRemoveDescription" tabindex="-1">
+     <button class="saved-dialog-close" id="closeSavedRemove" type="button" aria-label="Close removal confirmation">×</button>
+     <div class="saved-remove-icon" aria-hidden="true">⌫</div>
+     <p class="label">A LITTLE DOUBLE-CHECK</p>
+     <h2 id="savedRemoveTitle">Remove 0 dishes?</h2>
+     <p class="saved-remove-description" id="savedRemoveDescription">Are you sure you want to remove these dishes from your saved list?</p>
+     <div class="saved-removal-summary" id="savedRemovalSummary"></div>
+     <p class="saved-remove-reassurance">You can always save them again later.</p>
+     <div class="saved-dialog-actions">
+      <button class="btn outline" id="cancelSavedRemove" type="button">Cancel</button>
+      <button class="btn danger" id="confirmSavedRemove" type="button">Remove 0 dishes</button>
+     </div>
+    </section>
+   </div>
+   <div class="feed-sort-overlay" id="feedSortOverlay" hidden>
+    <button class="feed-sort-scrim" type="button" data-dismiss-feed-sort aria-label="Close sort options"></button>
+    <section class="feed-sort-dialog" role="dialog" aria-modal="true" aria-labelledby="feedSortTitle" tabindex="-1">
+     <header>
+      <div>
+       <p class="label">FIND YOUR NEXT BITE</p>
+       <h2 id="feedSortTitle">Sort dishes</h2>
+      </div>
+      <button class="saved-dialog-close" id="closeFeedSort" type="button" aria-label="Close sort options">×</button>
+     </header>
+     <div id="feedSortOptions" role="radiogroup" aria-label="Sort dishes by"></div>
+     <p class="feed-sort-footnote">Choose an order. We’ll take it from here.</p>
+    </section>
    </div>
    </div>
    <div aria-live="polite" class="toast" id="toast" role="status">

@@ -118,6 +118,176 @@ body { background: var(--cream); }
 #myReviews .panel { margin-bottom:16px; }
 .post-match-overlay.show { display:flex; }
 .post-match-sheet { max-height:90dvh; overflow-y:auto; }
+
+/* Saved batch removal and Feed sorting interaction. */
+.saved-selection-controls {
+ display:flex; align-items:center; justify-content:space-between; gap:12px;
+ margin:2px 0 4px; padding:0 2px 12px; border-bottom:1px solid var(--line);
+}
+.saved-selection-controls p { color:var(--muted); font-size:12px; }
+.saved-selection-controls > div { display:flex; align-items:center; gap:12px; }
+.saved-selection-controls .text-button { padding:7px 0; white-space:nowrap; }
+.saved-selection-controls .btn-sm { width:auto; height:36px; min-height:36px; padding:0 16px; }
+.saved-selection-dock,.saved-undo-toast {
+ position:absolute; z-index:12; left:18px; right:18px; bottom:92px;
+ display:flex; align-items:center; gap:11px; padding:10px 10px 10px 17px;
+ border:1px solid var(--ink); border-radius:18px; background:var(--paper);
+ box-shadow:0 5px 0 rgba(0,34,68,.08);
+}
+.saved-selection-dock strong { flex:1; font-size:13px; white-space:nowrap; }
+.saved-selection-dock .btn-sm { width:auto; height:40px; min-height:40px; flex:none; padding:0 16px; font-size:12px; }
+.saved-selection-dock[hidden],.saved-undo-toast[hidden],
+.saved-remove-overlay[hidden],.feed-sort-overlay[hidden],
+.saved-selection-checkbox[hidden] { display:none !important; }
+.btn.danger {
+ border:1px solid #d94f4a; background:#d94f4a; color:#fff;
+ box-shadow:0 4px 0 rgba(0,34,68,.08);
+}
+.btn.danger:hover { background:#c9433e; }
+.saved-selection-checkbox {
+ width:22px; height:22px; flex:none; margin:0 0 0 1px;
+ appearance:none; border:2px solid var(--line); border-radius:50%;
+ background:var(--paper); cursor:pointer;
+}
+.saved-selection-checkbox:checked {
+ border-color:var(--blue); background:var(--blue);
+}
+.saved-selection-checkbox:checked::after {
+ content:""; display:block; width:8px; height:4px; margin:5px 0 0 4px;
+ border:solid white; border-width:0 0 2px 2px; transform:rotate(-45deg);
+}
+#saved:not(.saved-selecting) .saved-selection-checkbox { display:none; }
+#saved.saved-selecting .saved-delete { display:none; }
+.saved-row.selected { border-radius:12px; }
+.saved-undo-toast {
+ bottom:92px; min-height:58px; overflow:hidden; background:var(--ink);
+ border-color:var(--ink); color:var(--paper); font-size:13px;
+}
+.saved-undo-check {
+ display:grid; width:22px; height:22px; flex:none; place-items:center;
+ border-radius:50%; background:rgba(255,255,255,.13); font-size:12px;
+}
+.saved-undo-toast button {
+ display:flex; align-items:center; gap:7px; margin-left:auto; padding:3px;
+ border:0; background:transparent; color:var(--paper); font-weight:800;
+ text-decoration:underline; text-underline-offset:3px;
+}
+.saved-undo-progress {
+ position:absolute; right:0; bottom:0; left:0; height:3px;
+ background:var(--gold); transform-origin:left; animation:saved-undo-countdown 8s linear forwards;
+}
+.saved-undo-toast:hover .saved-undo-progress,
+.saved-undo-toast:focus-within .saved-undo-progress { animation-play-state:paused; }
+@keyframes saved-undo-countdown { to { transform:scaleX(0); } }
+.saved-remove-overlay,.feed-sort-overlay {
+ position:absolute; inset:0; z-index:20; display:flex; align-items:center;
+ justify-content:center; padding:20px;
+}
+.feed-sort-overlay { z-index:18; }
+.saved-remove-scrim,.feed-sort-scrim {
+ position:absolute; inset:0; width:100%; height:100%; border:0;
+ background:rgba(0,34,68,.42); backdrop-filter:blur(2px);
+}
+.saved-remove-dialog,.feed-sort-dialog {
+ position:relative; width:min(430px,100%); max-height:100%; overflow-y:auto;
+ border:1px solid var(--ink); border-radius:24px; padding:24px;
+ background:var(--paper); box-shadow:0 10px 0 rgba(0,34,68,.08),0 28px 65px rgba(0,34,68,.16);
+}
+.saved-dialog-close {
+ display:grid; width:34px; height:34px; place-items:center; flex:none;
+ border:0; border-radius:11px; background:transparent; color:var(--muted);
+ font-size:24px; line-height:1;
+}
+.saved-dialog-close:hover { background:var(--sky); color:var(--ink); }
+.saved-remove-dialog > .saved-dialog-close {
+ position:absolute; top:12px; right:12px;
+}
+.saved-remove-icon {
+ display:grid; width:50px; height:50px; place-items:center; margin-bottom:16px;
+ border-radius:16px; background:#fde8e8; color:#d94f4a; font-size:23px;
+}
+.saved-remove-dialog > .label,.feed-sort-dialog .label {
+ margin:0 0 6px; color:var(--muted); font-size:9px; font-weight:800; letter-spacing:1px;
+}
+.saved-remove-dialog h2,.feed-sort-dialog h2 { font-size:27px; line-height:1.15; }
+.saved-remove-description,.saved-remove-reassurance {
+ margin-top:11px; color:var(--muted); font-size:13px; line-height:1.55;
+}
+.saved-removal-summary {
+ display:flex; align-items:center; gap:11px; margin:18px 0 13px;
+ padding:11px; border:1px solid #dfe4e0; border-radius:14px; background:#f1f3ee;
+ font-size:11px; font-weight:800; line-height:1.4;
+}
+.saved-summary-thumbnails { display:flex; flex:none; }
+.saved-summary-thumbnails img {
+ width:38px; height:38px; border:2px solid var(--paper); border-radius:10px; object-fit:cover;
+}
+.saved-summary-thumbnails img + img { margin-left:-11px; }
+.saved-removal-summary small {
+ display:block; margin-top:2px; color:var(--muted); font-size:10px; font-weight:400;
+}
+.saved-remove-dialog .saved-remove-reassurance { margin-top:0; font-size:11px; }
+.saved-dialog-actions { display:flex; gap:10px; margin-top:22px; }
+.saved-dialog-actions .btn { width:auto; height:44px; flex:1; min-height:44px; padding:8px 10px; font-size:12px; }
+.feed-sort-overlay { align-items:flex-start; justify-content:flex-end; padding:18px; }
+.feed-sort-scrim { background:rgba(0,34,68,.14); backdrop-filter:none; }
+.feed-sort-dialog {
+ width:min(330px,100%); margin-top:190px; padding:18px 12px 0; border-radius:20px;
+}
+.feed-sort-dialog > header { display:flex; align-items:center; justify-content:space-between; padding:0 6px 10px; }
+.feed-sort-dialog h2 { font-size:23px; }
+.feed-sort-group { padding:9px 0; }
+.feed-sort-group + .feed-sort-group { border-top:1px solid #e3e6df; }
+.feed-sort-group h3 {
+ margin:0 11px 5px; color:var(--muted); font:800 10px/1.4 'Nunito Sans',sans-serif;
+ letter-spacing:.8px; text-transform:uppercase;
+}
+.feed-sort-option {
+ display:flex; width:100%; min-height:39px; align-items:center; gap:11px;
+ padding:9px 11px; border:0; border-radius:10px; background:transparent;
+ color:var(--ink); text-align:left; font-size:12px;
+}
+.feed-sort-option:hover { background:#f1f3ee; }
+.feed-sort-option[aria-checked="true"] { background:var(--sky); color:var(--blue); font-weight:800; }
+.feed-sort-mark { width:22px; flex:none; color:var(--muted); font-weight:800; }
+.feed-sort-check { margin-left:auto; color:var(--blue); font-size:16px; }
+.feed-sort-footnote {
+ margin:7px -12px 0; padding:12px 16px; border-top:1px solid #e3e6df;
+ background:#f2f3ed; color:var(--muted); font-size:10px;
+}
+.feed-section-heading { gap:8px; }
+.feed-sort-title { min-width:0; }
+#feedArea .feed-section-heading h2 {
+ max-width:225px; font-size:19px; line-height:1.2;
+}
+.feed-sort-count { display:block; margin-top:4px; color:var(--muted); font-size:11px; }
+.feed-sort-trigger {
+ display:flex; min-height:38px; flex:none; align-items:center; gap:6px;
+ padding:0 10px; border:1px solid var(--line); border-radius:12px;
+ background:var(--paper); color:var(--blue); font-size:12px; font-weight:800;
+}
+.feed-sort-trigger:hover { background:var(--sky); }
+.feed-feature-date { color:var(--muted); font-size:11px; line-height:16px; }
+@media (min-width:431px) and (max-width:899px) {
+ .saved-selection-dock,.saved-undo-toast { left:max(24px,calc((100% - 690px)/2)); right:max(24px,calc((100% - 690px)/2)); }
+}
+@media (min-width:900px) {
+ .saved-selection-dock,.saved-undo-toast {
+  left:calc(220px + max(36px, (100% - 220px - 900px)/2));
+  right:max(36px, (100% - 220px - 900px)/2); bottom:24px;
+ }
+ .saved-remove-overlay,.feed-sort-overlay { left:220px; }
+ .feed-sort-dialog { margin-top:190px; margin-right:20px; }
+}
+@media (max-width:430px) {
+ .saved-selection-dock,.saved-undo-toast { left:14px; right:14px; bottom:88px; }
+ .saved-selection-controls { align-items:flex-start; }
+ .saved-selection-controls > div { gap:8px; }
+ .saved-selection-controls .text-button { font-size:12px; }
+ .saved-remove-dialog { padding:23px 20px; }
+ .feed-sort-overlay { padding:14px; }
+ .feed-sort-dialog { margin-top:170px; }
+}
 @media(min-width:900px) {
  .post-content,.review-content { max-width:620px; padding:0 32px 40px; }
  .post-match-overlay { justify-content:center; align-items:center; }
