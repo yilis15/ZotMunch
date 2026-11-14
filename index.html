@@ -169,7 +169,7 @@
       <div id="swipeArea">
        <p class="swipe-hint">← Skip&nbsp;&nbsp; · &nbsp;&nbsp;Tap for details&nbsp;&nbsp; · &nbsp;&nbsp;Want it →</p>
 
-       <article class="dish-card" id="gestureCard" aria-label="Current dish">
+       <article class="dish-card" id="gestureCard" aria-label="Current dish" tabindex="0" role="button">
         <div class="photo-slot dish-photo" id="dishPhoto">
          Dish photo placeholder
         </div>
@@ -186,6 +186,17 @@
           </div>
           <span class="dish-price" id="dishPrice"></span>
          </div>
+        </div>
+        <div class="swipe-card-tint" id="swipeCardTint" aria-hidden="true"></div>
+        <div class="swipe-choice-badge swipe-choice-badge--skip" id="skipBadge" aria-hidden="true">
+         <img src="assets/mascots/swipe-skip.png" alt="" draggable="false">
+         <strong>✕ SKIP</strong>
+         <span class="swipe-choice-caption" id="skipCaption">Keep swiping left</span>
+        </div>
+        <div class="swipe-choice-badge swipe-choice-badge--want" id="wantBadge" aria-hidden="true">
+         <img src="assets/mascots/swipe-want.png" alt="" draggable="false">
+         <strong>♥ WANT IT</strong>
+         <span class="swipe-choice-caption" id="wantCaption">Keep swiping right</span>
         </div>
        </article>
 

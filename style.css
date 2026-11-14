@@ -679,11 +679,78 @@ h2 {
 }
 
 #swipeArea .dish-card {
+    position: relative;
     padding: 0;
     overflow: hidden;
     background: var(--paper);
     border: 1.3px solid var(--ink);
     border-radius: 26px;
+    touch-action: pan-y;
+    transition: transform 180ms cubic-bezier(.22,.68,.24,1), opacity 300ms ease, border-color 120ms ease;
+    will-change: transform;
+}
+#swipeArea .dish-card.swipe-card--dragging {
+    cursor: grabbing;
+    transition: none;
+}
+#swipeArea .dish-card.swipe-card--settling {
+    transition: transform 180ms cubic-bezier(.22,.68,.24,1), border-color 120ms ease;
+}
+#swipeArea .dish-card.swipe-card--exiting {
+    transition: transform 300ms cubic-bezier(.4,0,.85,.4), opacity 300ms ease;
+    pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    #swipeArea .dish-card,
+    #swipeArea .dish-card.swipe-card--settling,
+    #swipeArea .dish-card.swipe-card--exiting {
+        transition: opacity 150ms ease, border-color 120ms ease !important;
+    }
+}
+#swipeArea .dish-card .swipe-card-tint {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+#swipeArea .swipe-choice-badge {
+    position: absolute;
+    z-index: 3;
+    top: 50%;
+    left: 50%;
+    display: flex;
+    width: min(220px, calc(100% - 32px));
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    opacity: 0;
+    text-align: center;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+#swipeArea .swipe-choice-badge img {
+    width: 100%;
+    height: 168px;
+    object-fit: contain;
+    user-select: none;
+}
+@media (max-width: 350px) {
+    #swipeArea .swipe-choice-badge img {
+        height: 150px;
+    }
+}
+#swipeArea .swipe-choice-badge strong {
+    color: var(--ink);
+    font: 800 17px/1.2 var(--font-body);
+}
+#swipeArea .swipe-choice-caption {
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 800;
 }
 
 #swipeArea .dish-photo {

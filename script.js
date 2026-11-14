@@ -133,6 +133,10 @@ const postTagOptions = {
     'Food type': ['Rice', 'Noodles', 'Hot pot', 'Dumplings', 'Sandwich', 'Dessert', 'Drinks'],
     Flavor: ['Spicy', 'Sweet', 'Sour', 'Savory', 'Light & Fresh']
 };
+const swipeConfig = { deadZone: 8, dominance: 1.2, thresholdRatio: 0.25, maxAlpha: 0.42, maxRotation: 8, returnMs: 180, exitMs: 300, buttonMs: 120, reducedExitMs: 150 };
+let swipePointer = null;
+let swipeBusy = false;
+let suppressSwipeClickUntil = 0;
 let draftFilters = filterDefaults();
 const persist = (k, v) => localStorage.setItem('zm_' + k, JSON.stringify(v));
 const $ = id => document.getElementById(id);
@@ -269,6 +273,7 @@ function renderFeedCards() {
 function renderDiscover() {
     const arr = activeDishes();
     const swipe = state.mode === 'swipe';
+    resetSwipeCard();
     $('swipeMode').classList.toggle('selected', swipe);
     $('feedMode').classList.toggle('selected', !swipe);
     $('swipeArea').style.display = swipe ? 'flex' : 'none';
@@ -305,20 +310,191 @@ function renderDiscover() {
     $('wantButton').textContent = state.saved[d.id] ? 'Saved ✓' : '♥ Want it';
     renderNav();
 }
+function swipeThreshold(width) {
+    return Math.max(swipeConfig.deadZone + 1, width * swipeConfig.thresholdRatio);
+}
+function resetSwipeCard() {
+    const card = $('gestureCard');
+    card.classList.remove('swipe-card--dragging', 'swipe-card--settling', 'swipe-card--exiting');
+    card.style.removeProperty('transform');
+    card.style.removeProperty('opacity');
+    card.style.borderColor = 'var(--ink)';
+    $('swipeCardTint').style.opacity = '0';
+    $('skipBadge').style.opacity = '0';
+    $('wantBadge').style.opacity = '0';
+    $('skipCaption').textContent = 'Keep swiping left';
+    $('wantCaption').textContent = 'Keep swiping right';
+}
+function swipeFeedback(dx, width = $('gestureCard').getBoundingClientRect().width) {
+    const threshold = swipeThreshold(width);
+    const progress = Math.max(0, Math.min(1, (Math.abs(dx) - swipeConfig.deadZone) / (threshold - swipeConfig.deadZone)));
+    return {
+        progress,
+        alpha: swipeConfig.maxAlpha * progress,
+        rotation: Math.sign(dx) * swipeConfig.maxRotation * progress,
+        direction: progress === 0 ? 'neutral' : dx < 0 ? 'skip' : 'want',
+        ready: Math.abs(dx) >= threshold,
+    };
+}
+function applySwipeFeedback(dx) {
+    const card = $('gestureCard');
+    const feedback = swipeFeedback(dx);
+    const tint = $('swipeCardTint');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.style.transform = reducedMotion
+        ? 'translate3d(0, 0, 0) rotate(0deg)'
+        : `translate3d(${dx}px, 0, 0) rotate(${feedback.rotation}deg)`;
+    card.style.borderColor = feedback.direction === 'want' ? 'var(--gold)' : feedback.direction === 'skip' ? 'var(--blue)' : 'var(--ink)';
+    tint.style.background = feedback.direction === 'want' ? 'var(--gold)' : 'var(--blue)';
+    tint.style.opacity = String(feedback.alpha);
+    for (const [direction, badge, caption] of [
+        ['skip', $('skipBadge'), $('skipCaption')],
+        ['want', $('wantBadge'), $('wantCaption')],
+    ]) {
+        badge.style.opacity = feedback.direction === direction ? String(Math.min(1, feedback.progress * 1.7)) : '0';
+        caption.textContent = feedback.ready
+            ? direction === 'skip' ? 'Release to skip' : 'Release to save'
+            : direction === 'skip' ? 'Keep swiping left' : 'Keep swiping right';
+    }
+}
+function setSwipeBusy(value) {
+    swipeBusy = value;
+    $('gestureCard').setAttribute('aria-busy', String(value));
+    ['skip', 'details', 'want'].forEach(action => {
+        const button = document.querySelector(`[data-action="${action}"]`);
+        if (button) button.disabled = value;
+    });
+    ['swipeMode', 'feedMode'].forEach(id => { $(id).disabled = value; });
+    const filters = document.querySelector('[data-action="openFilters"]');
+    if (filters) filters.disabled = value;
+}
+function releaseSwipePointer() {
+    if (!swipePointer) return;
+    const pointerId = swipePointer.id;
+    swipePointer = null;
+    if ($('gestureCard').hasPointerCapture(pointerId)) $('gestureCard').releasePointerCapture(pointerId);
+}
+function pauseSwipe(ms) {
+    return new Promise(resolve => window.setTimeout(resolve, ms));
+}
+async function settleSwipe() {
+    if (swipeBusy) return;
+    setSwipeBusy(true);
+    const card = $('gestureCard');
+    card.classList.remove('swipe-card--dragging');
+    card.classList.add('swipe-card--settling');
+    applySwipeFeedback(0);
+    await pauseSwipe(swipeConfig.returnMs);
+    resetSwipeCard();
+    setSwipeBusy(false);
+}
+async function performSwipe(direction, source = 'button', releasedDx = null) {
+    if (swipeBusy) return;
+    const dishesToShow = activeDishes();
+    if (!dishesToShow.length) return;
+    const dish = dishesToShow[state.index % dishesToShow.length];
+    const card = $('gestureCard');
+    const width = card.getBoundingClientRect().width;
+    const dx = (direction === 'skip' ? -1 : 1) * swipeThreshold(width);
+    setSwipeBusy(true);
+    releaseSwipePointer();
+    card.classList.remove('swipe-card--dragging');
+    if (source !== 'drag') {
+        card.classList.add('swipe-card--settling');
+        void card.offsetWidth;
+        applySwipeFeedback(dx);
+        await pauseSwipe(swipeConfig.buttonMs);
+    } else {
+        applySwipeFeedback(releasedDx ?? dx);
+    }
+    card.classList.remove('swipe-card--settling');
+    card.classList.add('swipe-card--exiting');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    card.style.transform = reducedMotion
+        ? 'translate3d(0, 0, 0)'
+        : `translate3d(${(direction === 'skip' ? -1 : 1) * (window.innerWidth + width)}px, 0, 0) rotate(${direction === 'skip' ? -swipeConfig.maxRotation : swipeConfig.maxRotation}deg)`;
+    card.style.opacity = '0';
+    await pauseSwipe(reducedMotion ? swipeConfig.reducedExitMs : swipeConfig.exitMs);
+    if (direction === 'want') {
+        const alreadySaved = Boolean(state.saved[dish.id]);
+        try {
+            saveDish(dish.id, false);
+        } catch {
+            if (!alreadySaved) delete state.saved[dish.id];
+            toast('Could not save this dish. Please try again.');
+            resetSwipeCard();
+            setSwipeBusy(false);
+            return;
+        }
+    }
+    advance();
+    setSwipeBusy(false);
+}
+function onSwipePointerDown(event) {
+    if (swipeBusy || state.page !== 'discover' || state.mode !== 'swipe' || !event.isPrimary ||
+        (event.pointerType === 'mouse' && event.button !== 0)) return;
+    swipePointer = { id: event.pointerId, startX: event.clientX, startY: event.clientY, dx: 0, dy: 0, moved: false, locked: false, vertical: false };
+    $('gestureCard').setPointerCapture(event.pointerId);
+}
+function onSwipePointerMove(event) {
+    if (!swipePointer || swipePointer.id !== event.pointerId || swipeBusy) return;
+    const dx = event.clientX - swipePointer.startX;
+    const dy = event.clientY - swipePointer.startY;
+    swipePointer.dx = dx;
+    swipePointer.dy = dy;
+    if (Math.hypot(dx, dy) > swipeConfig.deadZone) swipePointer.moved = true;
+    if (swipePointer.vertical) return;
+    if (!swipePointer.locked) {
+        if (Math.abs(dx) > swipeConfig.deadZone && Math.abs(dx) > swipeConfig.dominance * Math.abs(dy)) {
+            swipePointer.locked = true;
+            $('gestureCard').classList.add('swipe-card--dragging');
+        } else if (Math.abs(dy) > swipeConfig.deadZone && Math.abs(dy) >= Math.abs(dx)) {
+            swipePointer.vertical = true;
+            return;
+        }
+    }
+    if (swipePointer.locked) applySwipeFeedback(dx);
+}
+function onSwipePointerUp(event) {
+    if (!swipePointer || swipePointer.id !== event.pointerId) return;
+    const gesture = swipePointer;
+    gesture.dx = event.clientX - gesture.startX;
+    gesture.dy = event.clientY - gesture.startY;
+    if (Math.hypot(gesture.dx, gesture.dy) > swipeConfig.deadZone) gesture.moved = true;
+    if (gesture.locked) applySwipeFeedback(gesture.dx);
+    if (gesture.moved) suppressSwipeClickUntil = performance.now() + 450;
+    releaseSwipePointer();
+    $('gestureCard').classList.remove('swipe-card--dragging');
+    const decision = gesture.locked && Math.abs(gesture.dx) >= swipeThreshold($('gestureCard').getBoundingClientRect().width)
+        ? gesture.dx < 0 ? 'skip' : 'want'
+        : null;
+    if (decision) performSwipe(decision, 'drag', gesture.dx);
+    else if (gesture.locked) settleSwipe();
+    else if (gesture.moved) resetSwipeCard();
+}
+function cancelSwipeGesture() {
+    if (!swipePointer) return;
+    const wasLocked = swipePointer.locked;
+    if (swipePointer.moved) suppressSwipeClickUntil = performance.now() + 450;
+    releaseSwipePointer();
+    $('gestureCard').classList.remove('swipe-card--dragging');
+    if (wasLocked) settleSwipe();
+    else resetSwipeCard();
+}
 function advance() {
     const arr = activeDishes(); if (arr.length) {
         state.index = (state.index + 1) % arr.length;
         renderDiscover();
     }
 }
-function saveDish(id) {
+function saveDish(id, shouldRender = true) {
     if (!state.saved[id]) {
         state.saved[id] = { tried: false };
         persist('saved', state.saved);
         toast('Saved! Keep discovering.');
     }
-    else
-        toast('Already in your Saved list.'); renderDiscover();
+    else toast('Already in your Saved list.');
+    if (shouldRender) renderDiscover();
 }
 function updateDetailWantButton(id) {
     const isSaved = Boolean(state.saved[id]);
@@ -1000,16 +1176,11 @@ document.addEventListener('click', e => {
                 renderDiscover();
                 break;
             case 'skip':
-                advance();
+                performSwipe('skip');
                 break;
-            case 'want': {
-                let arr = activeDishes();
-                if (arr.length) {
-                    saveDish(arr[state.index].id);
-                    advance();
-                }
+            case 'want':
+                performSwipe('want');
                 break;
-            }
             case 'details': {
                 let arr = activeDishes();
                 if (arr.length)
@@ -1221,28 +1392,35 @@ document.querySelectorAll('.overlay').forEach(v => v.addEventListener('click', e
         closeOverlays();
     }
 }));
-let startX = 0, startY = 0;
-let suppressGestureClick = false;
-$('gestureCard').addEventListener('click', () => {
-    if (suppressGestureClick) { suppressGestureClick = false; return; }
+const swipeCard = $('gestureCard');
+swipeCard.addEventListener('pointerdown', onSwipePointerDown);
+swipeCard.addEventListener('pointermove', onSwipePointerMove);
+swipeCard.addEventListener('pointerup', onSwipePointerUp);
+swipeCard.addEventListener('pointercancel', cancelSwipeGesture);
+swipeCard.addEventListener('lostpointercapture', cancelSwipeGesture);
+swipeCard.addEventListener('dragstart', event => event.preventDefault());
+swipeCard.addEventListener('click', () => {
+    if (performance.now() < suppressSwipeClickUntil || swipeBusy) return;
     const arr = activeDishes();
-    if (arr.length) showDetail(arr[state.index].id);
+    if (arr.length) showDetail(arr[state.index % arr.length].id);
 });
-$('gestureCard').addEventListener('touchstart', e => { startX = e.touches[0].clientX; startY = e.touches[0].clientY; }, { passive: true });
-$('gestureCard').addEventListener('touchend', e => {
-    let dx = e.changedTouches[0].clientX - startX, dy = e.changedTouches[0].clientY - startY; if (Math.abs(dx) > 75 && Math.abs(dx) > Math.abs(dy) * 1.4) {
-        suppressGestureClick = true;
-        if (dx > 0) {
-            let arr = activeDishes();
-            if (arr.length) {
-                saveDish(arr[state.index].id);
-                advance();
-            }
-        }
-        else
-            advance();
+swipeCard.addEventListener('keydown', event => {
+    if ((event.key === 'Enter' || event.key === ' ') && !swipeBusy) {
+        event.preventDefault();
+        suppressSwipeClickUntil = performance.now() + 450;
+        const arr = activeDishes();
+        if (arr.length) showDetail(arr[state.index % arr.length].id);
     }
-}, { passive: true });
+});
+window.addEventListener('blur', cancelSwipeGesture);
+document.addEventListener('keydown', event => {
+    if (event.repeat || (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') ||
+        state.page !== 'discover' || state.mode !== 'swipe' || swipeBusy ||
+        document.querySelector('.overlay.show') ||
+        event.target.closest('input, textarea, select, [contenteditable="true"]')) return;
+    event.preventDefault();
+    performSwipe(event.key === 'ArrowLeft' ? 'skip' : 'want');
+});
 renderChoices();
 renderDiscover();
 renderSaved();
