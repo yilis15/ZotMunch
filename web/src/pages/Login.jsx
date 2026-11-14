@@ -68,7 +68,7 @@ export default function Login() {
         {step === 'email' ? (
           <>
             <button type="button" className="btn btn--gold btn--block" onClick={google} disabled={busy}>
-              <span className="g-mark" aria-hidden="true">G</span> Continue with Google
+              Continue with Anteater
             </button>
             <div className="divider">
               <span>or use email</span>
