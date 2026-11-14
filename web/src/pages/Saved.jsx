@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useApp } from '../lib/app'
-import { getSaves, setSaveStatus } from '../lib/api'
+import { getSaves, removeSave, setSaveStatus } from '../lib/api'
 import { formatMiles } from '../lib/location'
 import { priceLabel } from '../lib/discover'
 import { DishPhoto, EmptyState, ErrorNote, Hero, Loader, Segmented } from '../components/ui'
@@ -47,6 +47,15 @@ export default function Saved() {
       await setSaveStatus(userId, save.dish.id, next)
     } catch (e) {
       update(save.status)
+      setError(e)
+    }
+  }
+
+  const remove = async (save) => {
+    try {
+      await removeSave(userId, save.dish.id)
+      setSaves((all) => all.filter((s) => s.dish.id !== save.dish.id))
+    } catch (e) {
       setError(e)
     }
   }
@@ -116,14 +125,24 @@ export default function Saved() {
                     </p>
                   </div>
                 </Link>
-                <button
-                  type="button"
-                  className={s.status === 'tried' ? 'btn btn--blue btn--sm' : 'btn btn--outline btn--sm'}
-                  aria-pressed={s.status === 'tried'}
-                  onClick={() => toggle(s)}
-                >
-                  {s.status === 'tried' ? 'Tried it ✓' : 'Not yet'}
-                </button>
+                <div className="saved-row__actions">
+                  <button
+                    type="button"
+                    className={s.status === 'tried' ? 'btn btn--blue btn--sm' : 'btn btn--outline btn--sm'}
+                    aria-pressed={s.status === 'tried'}
+                    onClick={() => toggle(s)}
+                  >
+                    {s.status === 'tried' ? 'Tried it ✓' : 'Not yet'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn--outline btn--sm"
+                    aria-label={`Remove ${s.dish.name} from Saved`}
+                    onClick={() => remove(s)}
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             ))}
           </section>

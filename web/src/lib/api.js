@@ -46,11 +46,21 @@ async function withExtras(dishes) {
   const { lat, lng } = await getOrigin()
   const [near, counts] = await Promise.all([
     supabase.rpc('dishes_near', { p_lat: lat, p_lng: lng, p_meters: NEARBY_METERS }).then(check),
-    supabase.rpc('dish_save_counts', { p_dish_ids: dishes.map((d) => d.id) }).then(check),
+    getDishSaveCounts(dishes.map((d) => d.id)),
   ])
   const distance = new Map(near.map((n) => [n.dish_id, n.distance_m]))
-  const saves = new Map(counts.map((c) => [c.dish_id, c.save_count]))
-  return dishes.map((d) => ({ ...d, distance: distance.get(d.id) ?? null, saveCount: saves.get(d.id) ?? 0 }))
+  return dishes.map((d) => ({ ...d, distance: distance.get(d.id) ?? null, saveCount: counts.get(d.id) ?? 0 }))
+}
+
+async function getDishSaveCounts(dishIds) {
+  if (!dishIds.length) return new Map()
+  const rows = check(await supabase.rpc('dish_save_counts', { p_dish_ids: dishIds }))
+  return new Map(rows.map((row) => [row.dish_id, row.save_count]))
+}
+
+export async function getDishSaveCount(dishId) {
+  const counts = await getDishSaveCounts([dishId])
+  return counts.get(dishId) ?? 0
 }
 
 // ---- Tags & profile ----
@@ -210,4 +220,8 @@ export async function getSaveStatus(userId, dishId) {
 export async function setSaveStatus(userId, dishId, status) {
   const tried_at = status === 'tried' ? new Date().toISOString() : null
   check(await supabase.from('saves').update({ status, tried_at }).eq('user_id', userId).eq('dish_id', dishId))
+}
+
+export async function removeSave(userId, dishId) {
+  check(await supabase.from('saves').delete().eq('user_id', userId).eq('dish_id', dishId))
 }

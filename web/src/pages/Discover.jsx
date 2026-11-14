@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useApp } from '../lib/app'
-import { getDishes, getSwipedDishIds, recordSwipe, wantDish } from '../lib/api'
+import { getDishes, getDishSaveCount, getSwipedDishIds, recordSwipe, wantDish } from '../lib/api'
 import { BUDGETS, DISTANCES, EMPTY_FILTERS, filterCount, matchesFilters, rankForUser } from '../lib/discover'
 import DishCard from '../components/DishCard'
 import FilterSheet from '../components/FilterSheet'
@@ -64,7 +64,14 @@ export default function Discover() {
       recordSwipe(userId, dish.id, action, 'swipe').catch(setError)
       tour.practice(action)
       if (action === 'want') {
-        wantDish(userId, dish.id).catch(setError)
+        wantDish(userId, dish.id)
+          .then(async () => {
+            const saveCount = await getDishSaveCount(dish.id)
+            setDishes((current) =>
+              current?.map((item) => (item.id === dish.id ? { ...item, saveCount } : item)),
+            )
+          })
+          .catch(setError)
         clearTimeout(toastTimer.current)
         setToast(dish)
         toastTimer.current = setTimeout(() => setToast(null), TOAST_MS)
