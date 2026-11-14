@@ -37,9 +37,6 @@ export function Me() {
         <Link to="/onboarding" className="menu-row">
           <Icon name="filter" /> Food preferences <Icon name="chevron" className="push-right" />
         </Link>
-        <Link to="/saved" className="menu-row">
-          <Icon name="check" /> My food list <Icon name="chevron" className="push-right" />
-        </Link>
       </nav>
       <p className="muted small center">Your posts, stats, and places you've tried are coming soon.</p>
       <button type="button" className="btn btn--soft btn--block" onClick={tour.start}>
