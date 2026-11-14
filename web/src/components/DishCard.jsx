@@ -7,14 +7,14 @@ import { Chip, DishPhoto, SpiceLevel } from './ui'
 
 const CARD_TAG_CATEGORIES = ['cuisine', 'food_type']
 
-export function DishMeta({ dish }) {
+export function DishMeta({ dish, saveLabel = 'Loved' }) {
   const where = [dish.restaurant.name, dish.restaurant.address?.split(' · ')[0], formatMiles(dish.distance)]
   return (
     <>
       <p className="meta">{[...new Set(where.filter(Boolean))].join(' · ')}</p>
       {dish.saveCount > 0 && (
         <p className="meta loved">
-          <span aria-hidden="true">❤️</span> Loved by {dish.saveCount} Anteater{dish.saveCount === 1 ? '' : 's'}
+          <span aria-hidden="true">❤️</span> {saveLabel} by {dish.saveCount} Anteater{dish.saveCount === 1 ? '' : 's'}
         </p>
       )}
     </>
@@ -53,7 +53,7 @@ export default function DishCard({ dish, from }) {
       <DishPhoto dish={dish} className="dish-card__photo" />
       <div className="dish-card__body">
         <h3 className="dish-name">{dish.name}</h3>
-        <DishMeta dish={dish} />
+        <DishMeta dish={dish} saveLabel={from === 'feed' ? 'Saved' : 'Loved'} />
         <div className="dish-card__foot">
           <DishChips dish={dish} />
           <PricePill price={dish.price} size="lg" />
