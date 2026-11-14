@@ -481,6 +481,7 @@ h2 {
 }
 
 .back {
+    position: relative;
     height:36px;
     width:36px;
     background:var(--paper);
@@ -488,6 +489,11 @@ h2 {
     border-radius:18px;
     color:var(--ink);
     font-weight:800
+}
+.back::before {
+    position:absolute;
+    inset:-4px;
+    content:"";
 }
 
 .pref-scroller {

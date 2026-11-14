@@ -259,6 +259,14 @@ blockquote {
   background: transparent;
   cursor: pointer;
 }
+.backbar .icon-btn {
+  position: relative;
+}
+.backbar .icon-btn::before {
+  position: absolute;
+  inset: -2px;
+  content: '';
+}
 .icon-btn--soft {
   background: var(--paper);
   box-shadow: var(--lift);
