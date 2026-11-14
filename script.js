@@ -101,12 +101,25 @@ function normalizeFilters(value) {
 const state = {
     page: 'welcome', mode: 'swipe', index: 1, feedQuery: '',
     saved: read('saved', {}), diet: read('diet', []), allergies: read('allergies', []),
+    profileAvatar: read('profileAvatar', 'assets/mascots/mug.png'),
+    profileAvatarDraft: 'assets/mascots/mug.png',
     filters: normalizeFilters(read('filters', filterDefaults())),
     savedFilter: 'all', detailId: null, editing: false,
     reviewRating: 4, reviewPhotos: [],
     postPhotos: [], postRestaurantBranch: null, postMatch: null,
     postMatchDismissed: '', postTagsExpanded: false, postTags: []
 };
+const profileAvatars = [
+    ['Hello', 'assets/mascots/hero.png'],
+    ['Mug', 'assets/mascots/mug.png'],
+    ['Cookie', 'assets/mascots/cookie.png'],
+    ['Orange', 'assets/mascots/orange-hug.png'],
+    ['Sleep', 'assets/mascots/sleep.png'],
+    ['Sparkle', 'assets/mascots/orange-burst.png']
+];
+if (!profileAvatars.some(([, src]) => src === state.profileAvatar)) {
+    state.profileAvatar = 'assets/mascots/mug.png';
+}
 const restaurantBranches = [
     { restaurant: 'Little Wok', location: 'University Center', address: '4257 Campus Dr, Irvine' },
     { restaurant: 'Little Wok', location: 'Westpark', address: '1800 Main St, Irvine' },
@@ -167,19 +180,37 @@ function filterSelectionCount() {
 }
 function showPage(page) {
     closeOverlays();
-    state.page = page; document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === page)); if (page === 'discover')
-        renderDiscover(); if (page === 'saved')
-        renderSaved(); if (page === 'me')
-        renderNav(); if (page === 'preferences')
-        renderChoices(); if (page === 'review')
-        renderReview(); if (page === 'post')
-        renderPost(); if (page === 'postReview')
-        renderPostReview(); const scroll = document.querySelector('#' + page + ' .scroller'); if (scroll)
-        scroll.scrollTop = 0;
+    state.page = page;
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === page));
+    if (page === 'discover') renderDiscover();
+    if (page === 'saved') renderSaved();
+    if (page === 'me') {
+        renderNav();
+        renderMe();
+    }
+    if (page === 'editProfile') renderProfileEditor(true);
+    if (page === 'preferences') renderChoices();
+    if (page === 'review') renderReview();
+    if (page === 'post') renderPost();
+    if (page === 'postReview') renderPostReview();
+    const scroll = document.querySelector('#' + page + ' .scroller');
+    if (scroll) scroll.scrollTop = 0;
 }
 function toast(msg) { const el = $('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(window.toastTimer); window.toastTimer = setTimeout(() => el.classList.remove('show'), 2400); }
 function navHTML(page) { return [['discover', 'Discover'], ['post', 'Post'], ['saved', 'Saved'], ['me', 'Me']].map(([id, name]) => `<button class="nav-item ${page === id ? 'active' : ''}" data-action="nav" data-page="${id}"><span class="nav-icon">${id === 'discover' ? '◇' : id === 'saved' ? '♡' : id === 'post' ? '+' : '○'}</span>${name}</button>`).join(''); }
 function renderNav() { ['discover', 'saved', 'me'].forEach(id => $(id + 'Nav').innerHTML = navHTML(state.page)); }
+function renderMe() { $('profileAvatar').src = state.profileAvatar; }
+function renderProfileEditor(resetSelection = false) {
+    if (resetSelection) state.profileAvatarDraft = state.profileAvatar;
+    $('profileAvatarError').hidden = true;
+    $('profileAvatarPreview').src = state.profileAvatarDraft;
+    $('profileAvatarChoices').innerHTML = profileAvatars.map(([name, src]) => `
+        <button type="button" class="profile-avatar-choice ${src === state.profileAvatarDraft ? 'selected' : ''}"
+            data-action="selectProfileAvatar" data-avatar="${src}" aria-pressed="${src === state.profileAvatarDraft}">
+            <img src="${src}" alt=""><span>${name}</span>${src === state.profileAvatarDraft ? '<span class="profile-avatar-check" aria-hidden="true">✓</span>' : ''}
+        </button>
+    `).join('');
+}
 function renderChoices() { const groups = [['dietChoices', 'diet', ['Vegetarian', 'Vegan', 'Halal', 'Kosher', 'Gluten-free', 'Dairy-free', 'No restrictions']], ['allergyChoices', 'allergies', ['Milk', 'Eggs', 'Fish', 'Shellfish', 'Peanuts', 'Tree nuts', 'Wheat', 'Soy', 'Sesame', 'No allergies']]]; groups.forEach(([target, key, values]) => $(target).innerHTML = values.map(v => `<button class="chip ${state[key].includes(v) ? 'selected' : ''}" data-action="choice" data-kind="${key}" data-value="${v}">${v}</button>`).join('')); }
 function toggleChoice(key, v) {
     const none = key === 'diet' ? 'No restrictions' : 'No allergies'; if (v === none)
@@ -926,6 +957,29 @@ document.addEventListener('click', e => {
             case 'editPreferences':
                 state.editing = true;
                 showPage('preferences');
+                break;
+            case 'editProfile':
+                showPage('editProfile');
+                break;
+            case 'backToMe':
+                showPage('me');
+                break;
+            case 'selectProfileAvatar':
+                if (profileAvatars.some(([, src]) => src === b.dataset.avatar)) {
+                    state.profileAvatarDraft = b.dataset.avatar;
+                    renderProfileEditor();
+                }
+                break;
+            case 'saveProfilePicture':
+                try {
+                    persist('profileAvatar', state.profileAvatarDraft);
+                    state.profileAvatar = state.profileAvatarDraft;
+                    showPage('me');
+                    toast('Profile picture saved.');
+                } catch {
+                    $('profileAvatarError').textContent = 'Could not save your profile picture. Try again.';
+                    $('profileAvatarError').hidden = false;
+                }
                 break;
             case 'discover':
                 showPage('discover');

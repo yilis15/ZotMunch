@@ -63,6 +63,10 @@ export async function getProfile(userId) {
   return check(await supabase.from('users').select(PROFILE_FIELDS).eq('id', userId).single())
 }
 
+export async function saveProfileAvatar(userId, avatarUrl) {
+  check(await supabase.from('users').update({ avatar_url: avatarUrl }).eq('id', userId).select('id').single())
+}
+
 export async function getPreferenceTagIds(userId) {
   const rows = check(await supabase.from('user_preference_tags').select('tag_id').eq('user_id', userId))
   return rows.map((r) => r.tag_id)

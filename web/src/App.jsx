@@ -10,6 +10,7 @@ import Restaurant from './pages/Restaurant'
 import Saved from './pages/Saved'
 import WriteReview from './pages/WriteReview'
 import { Me, Post } from './pages/Placeholders'
+import EditProfile from './pages/EditProfile'
 
 function skippedOnboarding() {
   try {
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="saved" element={<Saved />} />
           <Route path="post" element={<Post />} />
           <Route path="me" element={<Me />} />
+          <Route path="me/edit-profile" element={<EditProfile />} />
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

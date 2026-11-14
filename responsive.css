@@ -19,8 +19,19 @@ body { background: var(--cream); }
 #savedList > .empty { grid-column:1 / -1; width:min(100%,440px); margin:20px auto; text-align:center; }
 .journal-banner { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:24px; border-radius:22px; background:var(--blue); color:var(--paper); }
 .journal-banner .label { color:var(--gold); margin-bottom:8px; }
-.journal-banner p:last-child { margin-top:10px; }
+.journal-banner p:last-of-type { margin-top:10px; }
 .journal-banner img { width:96px; height:110px; object-fit:contain; }
+.journal-avatar-button { flex:none; padding:0; border:0; background:transparent; }
+.journal-edit { display:block; margin-top:12px; padding:0; border:0; background:none; color:var(--gold); font-weight:800; text-decoration:underline; text-underline-offset:3px; }
+.profile-picture-editor { display:flex; flex-direction:column; align-items:center; gap:10px; }
+.profile-picture-editor > h2 { font-family:Fredoka,sans-serif; font-size:22px; }
+.profile-picture-preview { width:128px; height:128px; margin:8px 0; object-fit:contain; }
+.profile-avatar-choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; width:100%; margin:10px 0; padding:12px; border-radius:20px; background:var(--sky); }
+.profile-avatar-choice { position:relative; display:flex; min-width:0; min-height:124px; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:10px; border:2px solid transparent; border-radius:18px; background:var(--paper); color:var(--ink); font-weight:800; }
+.profile-avatar-choice img { width:76px; height:76px; object-fit:contain; }
+.profile-avatar-choice.selected { border-color:var(--blue); }
+.profile-avatar-check { position:absolute; top:8px; right:8px; display:grid; width:22px; height:22px; place-items:center; border-radius:50%; background:var(--blue); color:white; }
+.profile-picture-editor .btn { width:100%; }
 .photo-slot,.detail-photo { overflow:hidden; }
 .feed-feature-card { min-width:0; }
 .toast { max-width:calc(100% - 32px); }

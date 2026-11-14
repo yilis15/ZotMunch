@@ -29,8 +29,17 @@ export function Me() {
           <p className="small">
             {profile?.uci_verified ? 'UCI Anteater' : 'Anteater friend'} · {email}
           </p>
+          <Link to="/me/edit-profile" className="profile-edit-link">
+            Edit profile
+          </Link>
         </div>
-        <img src="/mascots/mug.png" alt="" />
+        <Link
+          to="/me/edit-profile#change-profile-picture"
+          className="journal-avatar"
+          aria-label="Change profile picture"
+        >
+          <img src={profile?.avatar_url || '/mascots/mug.png'} alt="" />
+        </Link>
       </section>
 
       <nav className="menu-card card" aria-label="Me">
