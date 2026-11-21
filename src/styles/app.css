@@ -1,0 +1,3867 @@
+/* ZotMunch styles. Tokens come from the Figma variables (ZotMunch / working kit).
+   Phone layout first; at 768px the tab bar becomes a sidebar and lists become grids. */
+
+:root {
+  --blue: #255799;
+  --blue-deep: #1d4680;
+  --gold: #fecc07;
+  --gold-deep: #e9b800;
+  --ink: #002244;
+  --muted: #586a7c;
+  --line: #c9cfcd;
+  --cream: #fff8e9;
+  --paper: #fffcf5;
+  --sky: #e4f0f5;
+  --yellow: #fff0ab;
+  --orange: #f78d2d;
+  --warn-bg: #fdecea;
+  --warn-ink: #a03224;
+
+  --font-display: 'Fredoka', 'Nunito Sans', system-ui, sans-serif;
+  --font-body: 'Nunito Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --radius-btn: 18px;
+  --radius-card: 22px;
+  --radius-pill: 999px;
+  --lift: 0 4px 0 #0022441a;
+  --gutter: 20px;
+  --nav-h: 72px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+/* No sideways bounce or swipe-to-go-back from the page itself; sideways gestures belong to swipe cards. */
+html,
+body {
+  overscroll-behavior-x: none;
+}
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font: 400 15px/1.45 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body.no-scroll {
+  overflow: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p,
+blockquote {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Type ---------- */
+
+.title {
+  font: 600 30px/34px var(--font-display);
+  color: var(--ink);
+}
+.title--sm {
+  font-size: 22px;
+  line-height: 27px;
+}
+.title--xs {
+  font-size: 20px;
+  line-height: 24px;
+}
+.title--light {
+  color: #fff;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--blue);
+  margin-bottom: 4px;
+}
+.eyebrow--gold {
+  color: var(--gold);
+}
+
+.wordmark {
+  font: 600 22px/1 var(--font-display);
+  color: var(--blue);
+  margin: 0;
+}
+.wordmark span {
+  color: var(--gold-deep);
+}
+.wordmark--lg {
+  font-size: 44px;
+  text-align: center;
+}
+
+.dish-name {
+  font: 600 20px/1.2 var(--font-display);
+}
+.dish-name--sm {
+  font: 800 15px/1.3 var(--font-body);
+}
+
+.meta {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.loved {
+  color: var(--blue);
+}
+
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 12.5px;
+}
+.lead {
+  margin-bottom: 20px;
+}
+.center {
+  text-align: center;
+}
+.push-right {
+  margin-left: auto;
+}
+
+.error {
+  background: var(--warn-bg);
+  color: var(--warn-ink);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+/* ---------- Buttons, chips, inputs ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-btn);
+  font: 800 15px/20px var(--font-body);
+  cursor: pointer;
+  box-shadow: var(--lift);
+  transition:
+    transform 0.08s,
+    box-shadow 0.08s,
+    background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #0022441a;
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.btn--blue {
+  background: var(--blue);
+  color: #fff;
+}
+.btn--blue:hover:not(:disabled) {
+  background: var(--blue-deep);
+}
+.btn--gold {
+  background: var(--gold);
+  color: var(--ink);
+}
+.btn--gold:hover:not(:disabled) {
+  background: var(--gold-deep);
+}
+.btn--outline {
+  background: var(--paper);
+  border-color: var(--ink);
+  color: var(--ink);
+}
+.btn--soft {
+  background: var(--sky);
+  color: var(--blue);
+}
+.btn--block {
+  width: 100%;
+}
+.btn--grow {
+  flex: 1;
+}
+.btn--sm {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 14px;
+  border-radius: 14px;
+  white-space: nowrap;
+}
+.btn--bar {
+  width: 100%;
+  justify-content: flex-start;
+  border-radius: 14px;
+  min-height: 46px;
+}
+
+.link-btn {
+  background: none;
+  border: 0;
+  color: var(--blue);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 8px;
+  align-self: center;
+}
+
+.icon-btn {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.icon-btn--soft {
+  background: var(--paper);
+  box-shadow: var(--lift);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.chips--center {
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 13px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  font: 700 12.5px/1 var(--font-body);
+  color: var(--ink);
+  white-space: nowrap;
+}
+button.chip {
+  cursor: pointer;
+}
+button.chip:hover {
+  border-color: var(--blue);
+}
+.chip--selected {
+  background: var(--blue);
+  border-color: var(--blue);
+  color: #fff;
+}
+.chip--warn {
+  background: var(--warn-bg);
+  border-color: #f2c4bd;
+  color: var(--warn-ink);
+}
+.price {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 14px;
+  background: var(--gold);
+  font: 800 13px/1 var(--font-body);
+  white-space: nowrap;
+}
+.price--lg {
+  padding: 9px 14px;
+  font: 600 20px/1 var(--font-display);
+  box-shadow: var(--lift);
+}
+
+.input {
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  font: 400 16px var(--font-body);
+  color: var(--ink);
+}
+.input:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.input--code {
+  text-align: center;
+  font: 600 26px var(--font-display);
+  letter-spacing: 0.3em;
+}
+
+.segmented {
+  display: flex;
+  padding: 4px;
+  border-radius: 18px;
+  background: var(--sky);
+}
+.segmented button {
+  flex: 1;
+  min-height: 40px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--blue);
+  font-weight: 800;
+  cursor: pointer;
+}
+.segmented button.is-active {
+  background: var(--blue);
+  color: #fff;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+  color: var(--muted);
+}
+.search:focus-within {
+  border-color: var(--blue);
+}
+.search input {
+  flex: 1;
+  border: 0;
+  background: transparent;
+  font: 400 16px var(--font-body);
+  color: var(--ink);
+  outline: none;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  display: block;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+/* ---------- Shell & navigation ---------- */
+
+.shell__main {
+  min-height: 100dvh;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  /* A swipe card dragged or flying off-screen mustn't widen the page, which let phones slide or zoom it
+     sideways. `clip` (not `hidden`) keeps sticky headers working. */
+  overflow-x: clip;
+}
+
+.nav {
+  position: fixed;
+  z-index: 20;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-around;
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom));
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  background: var(--paper);
+  border-top: 1px solid #0022441a;
+}
+.nav__logo {
+  display: none;
+}
+.nav__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 64px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.nav__item.active {
+  background: var(--yellow);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px var(--gutter) 28px;
+}
+.page--narrow {
+  max-width: 560px;
+}
+
+.hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+}
+.hero__mascot {
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  flex: none;
+}
+
+.backbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: -8px;
+}
+.backbar h1 {
+  font: 600 22px/27px var(--font-display);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* A 48px target with the arrow where it always was, plus an invisible strip out to the screen's edge and
+   a little above and below, so a thumb reaching for the corner doesn't have to be precise. */
+.backbar__back {
+  position: relative;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  margin: -4px; /* takes no more room than the old 40px button, so nothing on the page moves */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+}
+.backbar__back::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  bottom: -8px;
+  left: calc(12px - var(--gutter));
+  right: 0;
+}
+.backbar__back:active {
+  background: var(--sky);
+}
+
+.section-head,
+.filter-group__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.filter-group__head {
+  margin-bottom: 10px;
+}
+.filter-group__head h3 {
+  font: 800 15px/20px var(--font-body);
+}
+
+/* ---------- Login ---------- */
+
+.login {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.login__art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 32px 24px 8px;
+  background: var(--blue);
+}
+.login__art img {
+  width: min(300px, 78vw);
+}
+.sparkle {
+  position: absolute;
+  color: var(--gold);
+  font-size: 26px;
+}
+.sparkle--1 {
+  top: 18%;
+  left: 12%;
+}
+.sparkle--2 {
+  top: 10%;
+  right: 22%;
+  font-size: 18px;
+}
+.sparkle--3 {
+  top: 48%;
+  right: 10%;
+}
+.login__panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 24px var(--gutter) 32px;
+}
+.login__tagline {
+  text-align: center;
+  font-weight: 800;
+  font-size: 16px;
+}
+.login__hint {
+  margin: -4px 0 0;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  text-wrap: balance;
+}
+.login__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 4px 8px;
+}
+.login__dot {
+  color: var(--muted);
+}
+.login__links .link-btn:disabled {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+}
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ---------- Onboarding ---------- */
+
+.pref-group {
+  margin-bottom: 8px;
+}
+
+/* ---------- Discover ---------- */
+
+.discover-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.deck {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.deck__hint {
+  text-align: center;
+}
+/* The arrow-key tip is for computers: hidden on touch screens, which have no arrow keys. */
+.deck__keys {
+  display: none;
+  margin-top: -8px;
+  text-align: center;
+}
+@media (hover: hover) and (pointer: fine) {
+  .deck__keys {
+    display: block;
+  }
+}
+.deck__keys kbd {
+  display: inline-block;
+  min-width: 22px;
+  padding: 0 5px;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--paper);
+  font: 700 12px/18px var(--font-body);
+  color: var(--ink);
+  text-align: center;
+}
+.deck__stack {
+  position: relative;
+}
+.swipe-card {
+  position: relative;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none; /* no iOS long-press menu mid-swipe */
+  will-change: transform;
+  cursor: grab;
+  box-shadow: var(--lift);
+}
+/* The photo is part of the card's drag, never dragged by the browser on its own. */
+.swipe-card img {
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+.swipe-card:active {
+  cursor: grabbing;
+}
+.swipe-card--behind {
+  position: absolute;
+  inset: 0;
+  transform: scale(0.95) translateY(10px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.swipe-card__photo {
+  aspect-ratio: 4 / 3;
+  pointer-events: none;
+}
+.swipe-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px 16px;
+}
+
+/* One skeleton for every Feed and Swipe card, so cards are the same height whatever the dish: the name
+   takes at most 2 lines, the address 1,
+   "Saved by" keeps its line even at 0, and tags never wrap under the price. Full text is on the dish page. */
+.dish-card .dish-name,
+.swipe-card .title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+/* Swipe keeps one card height (so Skip / Want it never move) without a gap under a short name: the body
+   is as tall as a two-line-name card (padding 14+16, name 2×34, 3 gaps×4, address 18, Saved by 18,
+   tags row 8+38) and the tags + price row sits at its bottom, so any spare room goes above that row. */
+.swipe-card__body {
+  min-height: 192px;
+}
+.swipe-card .meta {
+  line-height: 18px;
+}
+.swipe-card .dish-card__foot {
+  margin-top: auto;
+}
+.dish-card .meta,
+.swipe-card .meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dish-card .meta.loved,
+.swipe-card .meta.loved {
+  min-height: 1lh;
+}
+/* Tags keep to one row: a tag that doesn't fit drops to a hidden second row, so none is cut in half. */
+.dish-card .dish-card__foot .chips,
+.swipe-card .dish-card__foot .chips {
+  flex-wrap: wrap;
+  min-width: 0;
+  max-height: 34px; /* one .chip */
+  overflow: hidden;
+}
+.dish-card--post .dish-card__body {
+  flex: 1;
+}
+.dish-card--post .dish-card__foot {
+  margin-top: auto;
+  padding-top: 8px;
+}
+/* Swipe feedback (Swipe Handoff v1.2): the whole card tints blue for Skip or gold for Want it, and a
+   mascot, a big label and a hint fade in at its center. SwipeDeck sets their opacity as the card moves. */
+.swipe-card__tint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: var(--blue);
+  opacity: 0;
+  pointer-events: none;
+}
+.swipe-card__tint[data-dir='want'] {
+  background: var(--gold);
+}
+.swipe-card__choice {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  display: grid;
+  justify-items: center;
+  gap: 9px;
+  width: min(220px, calc(100% - 32px));
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+.swipe-card__mascot {
+  display: block;
+  width: 100%;
+  height: 168px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 7px #0022442e);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.swipe-card__label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border: 2px solid var(--paper);
+  border-radius: 16px;
+  background: var(--blue);
+  color: var(--paper);
+  font: 600 26px/32px var(--font-display);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  box-shadow: 0 3px 0 #00224424;
+}
+.swipe-card__choice--want .swipe-card__label {
+  border-color: var(--ink);
+  background: var(--gold);
+  color: var(--ink);
+}
+.swipe-card__caption {
+  padding: 5px 10px;
+  border: 1px solid #0022441f;
+  border-radius: 9px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 11px/14px var(--font-body);
+  white-space: nowrap;
+}
+@media (max-width: 350px) {
+  .swipe-card__mascot {
+    height: 150px;
+  }
+  .swipe-card__label {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}
+.deck__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+.deck__actions .btn {
+  padding: 0 8px;
+}
+
+.added-toast {
+  position: absolute;
+  z-index: 5; /* above the swipe tint and sticker */
+  inset: 0 0 auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 12px 14px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 12px;
+  animation: drop-in 0.25s ease-out;
+}
+.added-toast div {
+  display: flex;
+  flex-direction: column;
+}
+.added-toast strong {
+  font-size: 14px;
+}
+.added-toast a {
+  color: var(--gold);
+  font-weight: 700;
+}
+@keyframes drop-in {
+  from {
+    transform: translateY(-100%);
+  }
+}
+
+.dish-card__photo {
+  aspect-ratio: 16 / 10;
+}
+.dish-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 14px 16px;
+}
+.dish-card__foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+}
+/* Feed's post card: who posted it, the dish (one link), then Manage lists on its own row. */
+.dish-card--post {
+  display: flex;
+  flex-direction: column;
+}
+.dish-card__link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+.dish-card__poster {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+.dish-card__poster .avatar {
+  flex: none;
+}
+.dish-card__poster--link {
+  color: inherit;
+  text-decoration: none;
+}
+.dish-card__poster--link:hover .dish-card__poster-name {
+  color: var(--blue);
+  text-decoration: underline;
+}
+.dish-card__posted {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+/* A poster's page (/people/:id): their avatar, name and how many dishes they've posted. */
+.person-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.person-head .avatar {
+  flex: none;
+}
+.person-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.person-head__text .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dish-card__poster-name {
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dish-card__poster-date {
+  flex: none;
+  color: var(--muted);
+  font-size: 12px;
+}
+.dish-card__actions {
+  padding: 0 14px 14px;
+}
+.dish-card__save {
+  min-height: 44px;
+  justify-content: flex-start;
+  gap: 8px;
+  font-size: 14px;
+}
+.dish-card__save:hover:not(:disabled) {
+  background: #d6e8f0;
+}
+/* Not saved yet: the pale yellow of Want it (gold means Want it across the site, blue means saved). */
+.dish-card__save--want {
+  background: var(--yellow);
+  color: var(--ink);
+}
+.dish-card__save--want:hover:not(:disabled) {
+  background: #ffe680;
+}
+.dish-card__save > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Feed's heading (the current order + count) with the Sort button on the right. */
+.feed-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.feed-head__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 12px;
+  min-width: 0;
+}
+
+/* Sort (handoff 02): an outlined blue button; its menu drops below it, right-aligned, over a light scrim. */
+.sort {
+  position: relative;
+  flex-shrink: 0;
+}
+.sort__button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 14px 0 16px;
+  border: 1.5px solid var(--blue);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--blue);
+  font: 800 14px/1 var(--font-body);
+  box-shadow: var(--lift);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sort__button[aria-expanded='true'] {
+  background: var(--blue);
+  color: var(--paper);
+}
+.sort__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #00224419;
+}
+.sort__menu {
+  position: fixed; /* top, right and max-height come from SortMenu */
+  z-index: 61;
+  width: min(317px, calc(100vw - 32px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px 12px 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 22px;
+  background: var(--paper);
+  box-shadow: 0 6px 0 #00224412, 0 20px 40px -15px #00224435;
+  animation: bite-dialog-pop 0.16s ease-out;
+  transform-origin: top right;
+}
+.sort__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0 6px 8px;
+}
+.sort__eyebrow {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.sort__title {
+  margin: 0;
+  font: 600 24px/1.15 var(--font-display);
+  color: var(--ink);
+}
+.sort__close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+.sort__close:hover {
+  background: var(--sky);
+  color: var(--ink);
+}
+.sort__group {
+  padding: 8px 0;
+}
+.sort__group + .sort__group {
+  border-top: 1px solid var(--line);
+}
+.sort__group-title {
+  margin: 0 12px 4px;
+  color: var(--muted);
+  font: 800 11px/1.4 var(--font-body);
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+}
+.sort__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--ink);
+  font: 700 14px/1.2 var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sort__option:hover {
+  background: var(--cream);
+}
+.sort__option:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
+}
+.sort__option[aria-checked='true'] {
+  background: var(--sky);
+  color: var(--blue);
+}
+.sort__mark {
+  width: 26px;
+  color: var(--muted);
+  font-weight: 800;
+  white-space: nowrap;
+}
+.sort__check {
+  margin-left: auto;
+  color: var(--blue);
+}
+.sort__foot {
+  margin: 6px -12px 0;
+  padding: 12px 18px;
+  border-top: 1px solid var(--line);
+  background: var(--cream);
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.dish-card:hover .dish-name {
+  color: var(--blue);
+}
+
+.feed-grid,
+.saved-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.photo {
+  width: 100%;
+  object-fit: cover;
+  background: var(--sky);
+}
+.photo--empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ---------- Filter sheet ---------- */
+
+.sheet-backdrop {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  background: #00224466;
+  animation: fade 0.2s;
+}
+.sheet {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 92dvh;
+  border-radius: 26px 26px 0 0;
+  background: var(--cream);
+  animation: slide-up 0.25s ease-out;
+}
+.sheet__grip {
+  width: 44px;
+  height: 4px;
+  margin: 10px auto 0;
+  border-radius: 4px;
+  background: var(--line);
+}
+.sheet__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px var(--gutter) 8px;
+}
+.sheet__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px var(--gutter) 16px;
+}
+.filter-group + .filter-group {
+  margin-top: 20px;
+}
+.sheet__foot {
+  display: flex;
+  gap: 10px;
+  padding: 12px var(--gutter) calc(16px + env(safe-area-inset-bottom));
+  border-top: 1px solid #0022441a;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* ---------- Empty & loading ---------- */
+
+.empty,
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 16px 8px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.empty__art img {
+  width: 200px;
+}
+.empty__art--framed {
+  padding: 28px;
+  border-radius: var(--radius-card);
+  background: var(--sky);
+  width: 100%;
+}
+.empty__art--framed img {
+  margin: 0 auto;
+}
+.empty h2,
+.loader h2 {
+  font: 600 26px/1.15 var(--font-display);
+}
+.empty__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.loader {
+  min-height: 70dvh;
+  justify-content: center;
+}
+.loader__art {
+  width: 100%;
+  max-width: 300px;
+  border-radius: var(--radius-card);
+  background: var(--blue);
+  padding: 24px;
+}
+.loader__art img {
+  width: 100%;
+  animation: bob 1.6s ease-in-out infinite;
+}
+.loader__dots {
+  display: flex;
+  gap: 8px;
+}
+.loader__dots span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: blink 1.2s infinite;
+}
+.loader__dots span:first-child {
+  background: var(--blue);
+}
+.loader__dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.loader__dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes bob {
+  50% {
+    transform: translateY(-6px) rotate(-2deg);
+  }
+}
+@keyframes blink {
+  50% {
+    opacity: 0.3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ---------- Dish details & restaurant ---------- */
+
+.detail__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.detail__info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.detail__photo {
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-card);
+}
+
+.place-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-card);
+  background: var(--sky);
+}
+.place-card__head {
+  display: flex;
+  gap: 10px;
+  color: var(--ink);
+}
+.place-card__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.detail__tags {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tag-row {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  align-items: start;
+  gap: 8px;
+}
+.tag-row__label {
+  padding-top: 8px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.review-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 14px 16px;
+  border-color: var(--line);
+}
+.review-card blockquote {
+  font-size: 14px;
+}
+.review-card cite {
+  display: block;
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 12px;
+  color: var(--muted);
+}
+.stars {
+  color: var(--gold-deep);
+  letter-spacing: 1px;
+}
+.stars__off {
+  color: var(--line);
+}
+
+.mini-dish__photo {
+  aspect-ratio: 16 / 10;
+}
+.mini-dish__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+/* ---------- Saved ---------- */
+
+.banner {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: var(--yellow);
+  font-size: 12.5px;
+}
+.banner strong {
+  font-size: 14px;
+}
+
+.saved-group {
+  padding: 16px;
+  border-color: var(--line);
+}
+.saved-group__head {
+  display: block;
+  margin-bottom: 10px;
+}
+.saved-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+}
+.swipe-row + .swipe-row,
+.saved-row--select + .saved-row--select {
+  border-top: 1px dashed var(--line);
+}
+.saved-row--select {
+  justify-content: flex-start;
+  width: 100%;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.saved-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 34px;
+}
+.saved-toolbar .link-btn {
+  font-size: 14px;
+  font-weight: 800;
+}
+.saved-toolbar__actions {
+  display: flex;
+}
+.checkbox {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+  color: transparent;
+}
+[aria-pressed='true'] > .checkbox {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+.swipe-row {
+  position: relative;
+  overflow: hidden;
+}
+.swipe-row__content {
+  position: relative;
+  background: var(--paper);
+  touch-action: pan-y;
+  user-select: none;
+}
+.swipe-row__remove {
+  position: absolute;
+  inset: 6px auto 6px 0;
+  width: 88px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--warn-ink);
+  color: #fff;
+  font: 800 14px var(--font-body);
+  cursor: pointer;
+}
+
+.btn--danger {
+  background: var(--warn-ink);
+  color: #fff;
+}
+.page--bar {
+  padding-bottom: 96px;
+}
+.floating-bar {
+  position: fixed;
+  z-index: 30;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + 12px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 10px 10px 10px 18px;
+  border: 1.5px solid var(--ink);
+  border-radius: 18px;
+  background: var(--paper);
+  box-shadow: var(--lift);
+  font-weight: 800;
+  animation: drop-in 0.25s ease-out;
+}
+.floating-bar--dark {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+  min-height: 56px;
+}
+.floating-bar__action {
+  padding: 8px 12px;
+  border: 0;
+  background: none;
+  color: var(--gold);
+  font: 800 15px var(--font-body);
+  cursor: pointer;
+}
+.saved-row__dish {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.saved-row__photo {
+  width: 64px;
+  height: 60px;
+  flex: none;
+  border-radius: 14px;
+  font-size: 0;
+}
+.saved-row__photo svg {
+  width: 24px;
+}
+
+/* A saved dish its poster deleted (Figma: Saved · Unavailable). */
+.saved-group--gone,
+.saved-group--gone .swipe-row__content {
+  background: var(--sky);
+}
+.saved-row__gone-art {
+  width: 112px;
+  height: 70px;
+  object-fit: contain;
+}
+.saved-row__gone-name {
+  color: var(--muted);
+}
+.saved-row__gone-title {
+  margin: 2px 0 0;
+  font-weight: 800;
+  color: var(--ink);
+}
+.saved-row__gone-hint {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--blue);
+}
+
+/* ---------- My posts / My reviews (Figma: UI Updates) ---------- */
+
+.manage-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.manage-card__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.manage-card__photo {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.manage-card__photo .photo {
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+}
+.manage-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.manage-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.manage-card__actions .link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 800;
+}
+.manage-card .review__body,
+.manage-card .thumbs {
+  margin: 0;
+}
+.manage-card--select {
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+}
+.manage-card--select[aria-pressed='true'] {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 1px var(--blue);
+}
+.manage-card--select:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* "Delete this post?" (Figma: Confirm): a centered card, phone and desktop alike. */
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  align-items: safe center; /* a dialog taller than a short screen scrolls instead of being cut off */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--gutter);
+  background: #00224466;
+}
+.confirm {
+  width: min(100%, 400px);
+  padding: 24px 20px 20px;
+  border-radius: var(--radius-card);
+  background: var(--paper);
+}
+.confirm h2 {
+  margin: 0;
+}
+.confirm p {
+  margin: 8px 0 20px;
+}
+.confirm__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+/* BiteDialog (leave Post, delete a draft): a gold-edged card with a mascot peeking over
+   its top edge, a preview of the bite so far, and the actions stacked for thumbs. */
+.btn--danger-text {
+  color: var(--warn-ink);
+}
+.bite-dialog {
+  position: relative;
+  width: min(100%, 360px);
+  margin-top: 44px; /* room for the mascot above the card */
+  padding: 56px 20px 16px;
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  box-shadow: 0 12px 32px #00224440;
+  text-align: center;
+  animation: bite-dialog-pop 0.22s ease-out;
+}
+.bite-dialog__mascot {
+  position: absolute;
+  top: -44px;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  border: 4px solid var(--paper);
+  border-radius: 50%;
+  background: var(--yellow);
+  transform: translateX(-50%);
+}
+.bite-dialog__mascot img {
+  width: 70px;
+  height: 70px;
+  object-fit: contain;
+}
+/* ModerationDialog: the anteater officer in a larger navy badge peeking over the top edge, gold-ringed
+   like the card, then a list of what the content check turned down. */
+.bite-dialog--hero {
+  margin-top: 60px; /* room for the badge above the card */
+  padding-top: 72px;
+}
+.bite-dialog__mascot--badge {
+  top: -60px;
+  width: 124px;
+  height: 124px;
+  overflow: hidden;
+  background: var(--ink);
+  box-shadow: 0 0 0 3px var(--gold), 0 8px 20px #00224440;
+}
+.bite-dialog__mascot--badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.reject-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+.reject-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-left: 4px solid var(--warn-ink);
+  border-radius: 14px;
+  background: var(--sky);
+  color: var(--ink);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 19px;
+}
+.reject-item__thumb {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.reject-item__thumb--blur {
+  filter: blur(6px);
+}
+.reject-item__thumb--icon {
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  color: var(--warn-ink);
+}
+.bite-dialog__title {
+  margin: 0;
+  font: 600 22px/28px var(--font-display);
+  color: var(--ink);
+}
+.bite-dialog__body {
+  margin: 6px 0 16px;
+  font-size: 14.5px;
+  line-height: 20px;
+  color: var(--muted);
+}
+.bite-dialog__bite {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 16px;
+  background: var(--sky);
+  text-align: left;
+}
+.bite-dialog__photo {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.bite-dialog__photo--empty {
+  display: grid;
+  place-items: center;
+  background: var(--paper);
+  color: var(--blue);
+}
+.bite-dialog__bite-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bite-dialog__bite-text strong {
+  overflow: hidden;
+  font: 600 17px/22px var(--font-display);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* PickDialog ("Pick for me" on Saved): a three-row slot-machine window; the strip slides up through it and
+   stops with the pick in the gold-framed middle row. */
+.pick-btn {
+  gap: 8px;
+}
+.pick {
+  margin-bottom: 16px;
+  text-align: left;
+}
+.pick__reel {
+  position: relative;
+  height: 216px; /* three rows */
+  overflow: hidden;
+  border-radius: 18px;
+  background: var(--sky);
+  contain: inline-size; /* long names truncate instead of widening the dialog */
+}
+/* Rows above and below the window fade out, like a real reel. */
+.pick__reel::before,
+.pick__reel::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  height: 64px;
+  pointer-events: none;
+}
+.pick__reel::before {
+  top: 0;
+  background: linear-gradient(var(--sky), #e4f0f500);
+}
+.pick__reel::after {
+  bottom: 0;
+  background: linear-gradient(#e4f0f500, var(--sky));
+}
+.pick__strip {
+  will-change: transform;
+}
+.pick__strip.is-blurred .pick__row {
+  filter: blur(1.2px);
+}
+.pick__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 72px;
+  padding: 0 22px;
+  transition: filter 0.4s;
+}
+.pick__thumb {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--paper);
+}
+.pick__row-text,
+.pick__result-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pick__row-text strong,
+.pick__row-text .meta,
+.pick__result-text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pick__row-text strong {
+  font: 600 17px/22px var(--font-display);
+  color: var(--ink);
+}
+/* The middle row's frame, with pointers on both sides. */
+.pick__window {
+  position: absolute;
+  top: 72px;
+  left: 8px;
+  right: 8px;
+  z-index: 3;
+  height: 72px;
+  border: 3px solid var(--gold);
+  border-radius: 14px;
+  pointer-events: none;
+}
+.pick__window::before,
+.pick__window::after {
+  position: absolute;
+  top: 50%;
+  color: var(--gold);
+  font-size: 16px;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+.pick__window::before {
+  content: '▶';
+  left: -2px;
+}
+.pick__window::after {
+  content: '◀';
+  right: -2px;
+}
+.pick__reel.is-done .pick__window {
+  box-shadow: 0 0 0 4px #fecc0759, 0 0 22px #fecc07aa;
+  animation: pick-glow 1.2s ease-in-out 2;
+}
+.pick__reel.is-done .pick__row--win {
+  animation: pick-bounce 0.45s ease-out;
+}
+@keyframes pick-bounce {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+@keyframes pick-glow {
+  50% { box-shadow: 0 0 0 6px #fecc0733, 0 0 30px #fecc07; }
+}
+.pick__confetti {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+  pointer-events: none;
+}
+.pick__confetti i {
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--c);
+  opacity: 0;
+  animation: pick-confetti 1.2s cubic-bezier(.2,.7,.4,1) forwards;
+}
+@keyframes pick-confetti {
+  0% { opacity: 1; transform: translate(0, 0) rotate(0); }
+  70% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--x), calc(var(--y) + 60px)) rotate(var(--r)); }
+}
+.pick__result {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 2px solid var(--gold);
+  border-radius: 16px;
+  background: var(--yellow);
+  contain: inline-size;
+  animation: bite-dialog-pop 0.25s ease-out;
+}
+.pick__result-photo {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: var(--paper);
+}
+.pick__result-text {
+  gap: 2px;
+}
+.pick__result-text strong {
+  font: 600 19px/24px var(--font-display);
+  color: var(--ink);
+}
+.pick__status {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 2px 9px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--muted);
+}
+.pick__status--tried {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: var(--paper);
+}
+@media (prefers-reduced-motion: reduce) {
+  .pick__reel.is-done .pick__window,
+  .pick__reel.is-done .pick__row--win,
+  .pick__result {
+    animation: none;
+  }
+}
+
+/* RemoveSavesDialog: the dishes about to leave Saved. Up to about four rows show; more scroll inside the
+   card, with a fade at the bottom edge hinting there's more. */
+.remove-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 10px;
+  border-radius: 16px;
+  background: var(--sky);
+  list-style: none;
+  text-align: left;
+  contain: inline-size; /* long names truncate instead of widening the dialog */
+}
+.remove-list--many {
+  max-height: 228px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 22px), transparent);
+  padding-bottom: 20px;
+}
+.remove-list__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.remove-list__photo {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--paper);
+}
+.remove-list__photo--gone {
+  object-fit: contain;
+  padding: 4px;
+}
+.remove-list__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.remove-list__text strong,
+.remove-list__text .meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.remove-list__text strong {
+  font: 600 16px/21px var(--font-display);
+  color: var(--ink);
+}
+.bite-dialog__placeholder {
+  color: var(--muted);
+  font-style: italic;
+}
+.bite-dialog__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bite-dialog__stay {
+  align-self: center;
+  margin-top: -2px;
+  font-size: 15px;
+  font-weight: 800;
+}
+@keyframes bite-dialog-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bite-dialog {
+    animation: none;
+  }
+}
+
+/* ---------- Me ---------- */
+
+.journal-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: var(--blue);
+  color: #fff;
+}
+.journal-card img {
+  width: 96px;
+}
+.menu-card {
+  border-color: var(--line);
+}
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  font-weight: 700;
+}
+.menu-row + .menu-row {
+  border-top: 1px solid #0022441a;
+}
+.menu-row:hover {
+  background: var(--sky);
+}
+
+.journal-card__text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.journal-card__email {
+  opacity: 0.85;
+  overflow-wrap: anywhere;
+}
+.journal-card__link {
+  margin-top: 8px;
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.menu-row__text {
+  display: flex;
+  flex-direction: column;
+}
+.menu-row__text small {
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.avatar {
+  flex: none;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--sky);
+}
+.journal-card__avatar {
+  display: block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition: transform 150ms ease-out;
+}
+.journal-card__avatar:hover {
+  transform: scale(1.04);
+}
+.journal-card__avatar:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+.journal-card img.avatar--frame {
+  width: 96px;
+  height: 96px;
+  border: 3px solid #fff;
+  background: #fff;
+}
+
+/* Posted dish, draft, and my-review rows */
+.post-row {
+  display: flex;
+  gap: 14px;
+  padding: 12px;
+  border-radius: var(--radius-card);
+  background: var(--sky);
+}
+.post-row--loading {
+  min-height: 104px;
+}
+.post-row--empty {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 16px;
+}
+.post-row__photo {
+  flex: none;
+  width: 96px;
+  height: 80px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.post-row__photo .photo {
+  width: 100%;
+  height: 100%;
+  font-size: 0;
+}
+.post-row__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.post-row__actions {
+  display: flex;
+  gap: 16px;
+}
+.link-btn--inline {
+  align-self: flex-start;
+  padding: 4px 0 0;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.link-btn--danger {
+  color: var(--warn-ink);
+}
+
+.my-review {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-color: var(--line);
+}
+.my-review__dish {
+  display: flex;
+  gap: 12px;
+}
+.my-review__photo {
+  flex: none;
+  width: 72px;
+  height: 64px;
+  border-radius: 14px;
+  font-size: 0;
+}
+
+/* Edit profile */
+.profile-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.profile-avatar__current {
+  position: relative;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+.profile-avatar__current img {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 4px solid var(--paper);
+  background: var(--sky);
+  box-shadow: var(--lift);
+  object-fit: cover;
+}
+.profile-avatar__edit {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+}
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  border-radius: var(--radius-card);
+  background: var(--sky);
+}
+.avatar-choice {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  background: var(--paper);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.avatar-choice img {
+  width: 100%;
+  max-width: 88px;
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.avatar-choice.is-selected {
+  border-color: var(--blue);
+}
+.avatar-choice__check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+}
+
+/* ---------- Post & review forms ---------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.field-label {
+  font-weight: 800;
+  font-size: 15px;
+}
+.field-label-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.field-required {
+  font-size: 12px;
+  color: var(--blue);
+}
+.field-hint {
+  font-size: 12px;
+  color: var(--muted);
+}
+.field-error {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--warn-ink);
+}
+.input--invalid,
+.search--invalid {
+  border-color: var(--warn-ink);
+}
+.input--readonly {
+  display: flex;
+  align-items: center;
+  background: var(--sky);
+  border-color: transparent;
+  color: var(--muted);
+}
+.textarea {
+  min-height: 120px;
+  padding: 14px 16px;
+  resize: vertical;
+  line-height: 1.45;
+}
+.money {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--blue);
+  font-weight: 800;
+}
+.money:focus-within {
+  border-color: var(--blue);
+}
+.money.input--invalid {
+  border-color: var(--warn-ink);
+}
+.money input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font: 400 16px var(--font-body);
+  color: var(--ink);
+  outline: none;
+}
+
+.banner--gold {
+  background: var(--yellow);
+}
+
+.photo-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 10px;
+}
+.photo-tile,
+.photo-add {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: hidden;
+}
+.photo-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-tile--failed img {
+  opacity: 0.4;
+}
+/* A photo the content check turned down: dimmed, red edge, the reason across the bottom. */
+.photo-tile--rejected {
+  outline: 2px solid var(--warn-ink);
+  outline-offset: -2px;
+}
+.photo-tile--rejected img {
+  opacity: 0.45;
+}
+.photo-tile__status--rejected {
+  background: var(--warn-ink);
+  line-height: 1.25;
+}
+.photo-tile__status {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 4px;
+  background: #002244b3;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+.photo-tile__remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: #002244cc;
+  color: #fff;
+  cursor: pointer;
+}
+.photo-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  background: var(--sky);
+  color: var(--blue);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.photo-picker:has(.photo-tile:only-of-type) .photo-add,
+.photo-picker:not(:has(.photo-tile)) .photo-add {
+  grid-column: span 2;
+  aspect-ratio: auto;
+}
+
+.restaurant-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.place-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  border: 1.5px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+}
+.place-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+.place-option:hover:not(.is-selected) {
+  background: var(--cream);
+}
+.place-option.is-selected {
+  background: var(--sky);
+}
+.place-option svg {
+  flex: none;
+  margin-top: 2px;
+}
+.place-option span {
+  display: flex;
+  flex-direction: column;
+}
+.place-option strong {
+  font-size: 14px;
+}
+.place-option small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.star-input {
+  display: flex;
+  gap: 6px;
+}
+.star-input button {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--line);
+  cursor: pointer;
+}
+.star-input button.is-on {
+  color: var(--gold);
+  text-shadow: 0 1px 0 var(--gold-deep);
+}
+
+.tag-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--sky);
+  text-align: left;
+  cursor: pointer;
+}
+.tag-card__head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.tag-card__optional {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  color: var(--blue);
+}
+
+.fullscreen {
+  position: fixed;
+  z-index: 45;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  animation: fade 0.15s;
+}
+.fullscreen__body {
+  flex: 1;
+  overflow-y: auto;
+}
+.fullscreen__foot {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 12px var(--gutter) calc(16px + env(safe-area-inset-bottom));
+}
+
+.dish-summary {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  border-color: var(--line);
+}
+.dish-summary__photo {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 14px;
+  font-size: 0;
+}
+.dish-summary__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+.dish-summary__tags {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.dish-summary__tags .link-btn {
+  padding: 4px 0;
+}
+
+.published {
+  align-items: stretch;
+}
+.published__art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px;
+  border-radius: var(--radius-card);
+  background: var(--blue);
+}
+.published__art img {
+  width: min(240px, 70%);
+}
+
+/* Reviews on the dish page */
+.reviews {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-margin-top: 16px;
+}
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.review + .review {
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+.review__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.review__name {
+  font-weight: 800;
+  font-size: 14px;
+}
+.review__body {
+  font-size: 14px;
+  white-space: pre-line;
+}
+.thumbs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+.thumb {
+  flex: none;
+  width: 76px;
+  height: 76px;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--sky);
+  cursor: pointer;
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.detail__media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.carousel-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.carousel {
+  position: relative;
+  overflow: hidden;
+}
+.carousel__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.carousel__track::-webkit-scrollbar {
+  display: none;
+}
+.carousel__track:focus-visible {
+  outline-offset: -3px;
+}
+.carousel__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  user-select: none;
+}
+.carousel__count {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: #002244b3;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.carousel__dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  display: flex;
+  gap: 6px;
+  transform: translateX(-50%);
+}
+.carousel__dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffffffa6;
+  box-shadow: 0 0 0 1px #00224433;
+  transition: width 0.2s;
+}
+.carousel__dots span.is-active {
+  width: 18px;
+  border-radius: 4px;
+  background: #fff;
+}
+.carousel__arrow {
+  position: absolute;
+  top: 50%;
+  display: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  background: #fffcf5e6;
+  color: var(--ink);
+  box-shadow: var(--lift);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+.carousel__arrow--prev {
+  left: 12px;
+}
+.carousel__arrow--next {
+  right: 12px;
+}
+/* Arrows only where there's a mouse; fingers swipe. */
+@media (hover: hover) and (pointer: fine) {
+  .carousel__arrow {
+    display: grid;
+  }
+}
+.thumb.is-active {
+  outline: 3px solid var(--blue);
+  outline-offset: -3px;
+}
+.photo-viewer {
+  position: fixed;
+  z-index: 50;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  border: 0;
+  background: #002244e6;
+  cursor: zoom-out;
+}
+.photo-viewer img {
+  max-height: 90dvh;
+  border-radius: 18px;
+}
+
+/* Duplicate prompt: a bottom sheet on phones, a centered card on wide screens. */
+.sheet--compact {
+  max-height: none;
+}
+
+/* ---------- First-time guide ---------- */
+
+/* Room to scroll a short page far enough for its spotlights to clear the tab bar. */
+.tour-open .shell__main {
+  padding-bottom: 70dvh;
+}
+
+/* Phones: steps that don't point at the tab bar hide it, so it can't cover the buttons they ask you to tap. */
+@media (max-width: 767px) {
+  .tour-hide-nav .nav {
+    visibility: hidden;
+  }
+}
+
+/* Short screens: a flatter practice photo, so the coachmark covers less of the card. */
+@media (max-height: 700px) {
+  .tour-open .swipe-card__photo {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* While the guide is open the page must not move at all: on phones a nudge slides the address bar, and
+   fixed elements are then tapped somewhere else than they're drawn (ProductTour also cancels touchmove). */
+html.tour-open,
+body.tour-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+.tour {
+  position: fixed;
+  z-index: 60;
+  inset: 0;
+  pointer-events: none; /* the guard in ProductTour decides what can be touched */
+  touch-action: none;
+}
+.tour__scrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: #002244a6;
+}
+.tour__ring {
+  position: fixed;
+  border: 2px solid var(--gold);
+  border-radius: 20px;
+  box-shadow: 0 0 14px 2px #fecc0759;
+}
+.tour__cue {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 164px;
+  height: 44px;
+  margin-left: -82px;
+  border-radius: 22px;
+  background: var(--gold);
+  font: 800 14px/20px var(--font-body);
+  color: var(--ink);
+}
+.tour__cue--left {
+  animation: tour-cue-left 1.6s ease-in-out infinite;
+}
+.tour__cue--right {
+  animation: tour-cue-right 1.6s ease-in-out infinite;
+}
+@keyframes tour-cue-left {
+  60% {
+    transform: translateX(-28px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-28px);
+    opacity: 0;
+  }
+}
+@keyframes tour-cue-right {
+  60% {
+    transform: translateX(28px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(28px);
+    opacity: 0;
+  }
+}
+
+.tour-card {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: min(342px, calc(100vw - 16px));
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--paper);
+  box-shadow: 0 8px 24px #00224438;
+  pointer-events: auto;
+}
+.tour-card__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+}
+.tour-card__head img {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+.tour-card__head h2 {
+  font: 600 20px/24px var(--font-display);
+}
+.tour-card__body {
+  min-height: 42px;
+  font-size: 15px;
+  line-height: 21px;
+}
+
+/* Figma 02 · Swipe your way: a gold-edged card, a centered title over a phone panel and a computer panel. */
+.tour-card--devices {
+  border: 2px solid var(--gold);
+}
+.tour-card__title {
+  margin: 2px 0 4px;
+  font: 600 24px/30px var(--font-display);
+  text-align: center;
+}
+.tour-devices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.tour-device {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 8px 10px;
+  border-radius: 18px;
+  background: var(--sky);
+}
+.tour-device figcaption {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--blue);
+}
+.tour-device img {
+  width: 100%;
+  max-width: 112px;
+  height: auto;
+}
+.tour-device p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink);
+}
+.tour-card__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+.tour-card__count {
+  flex: none;
+  width: 26px;
+  font-size: 12px;
+  line-height: 17px;
+  color: var(--blue);
+}
+.tour-btn {
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  font: 800 14px/20px var(--font-body);
+  color: var(--blue);
+  cursor: pointer;
+}
+.tour-btn--back {
+  flex: none;
+  width: 62px;
+  border: 1px solid var(--line);
+  background: var(--cream);
+}
+.tour-btn--back:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.tour-btn--next {
+  flex: 0 1 104px;
+  min-width: 0;
+  background: var(--blue);
+  color: var(--paper);
+}
+.tour-btn--skip {
+  flex: none;
+  padding: 0 4px;
+  white-space: nowrap;
+}
+.tour-card__pointer {
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  margin-left: -8px;
+  background: var(--paper);
+}
+.tour-card__pointer--bottom {
+  bottom: -8px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.tour-card__pointer--top {
+  top: -8px;
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+.practice-tag {
+  position: absolute;
+  z-index: 1;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  font: 800 12px/16px var(--font-body);
+  color: #fff;
+}
+.photo--whole {
+  object-fit: contain;
+}
+.menu-row--button {
+  width: 100%;
+  border: 0;
+  border-top: 1px solid #0022441a;
+  background: none;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.menu-row--button:hover {
+  background: var(--sky);
+}
+
+/* ---------- Wider screens ---------- */
+
+@media (min-width: 600px) {
+  .feed-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* cards in a row stretch to one height */
+  }
+  .saved-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+@media (min-width: 768px) {
+  :root {
+    --gutter: 32px;
+  }
+
+  .shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+  }
+  .shell__main {
+    padding-bottom: 0;
+  }
+  .floating-bar {
+    left: calc(220px + var(--gutter));
+    bottom: 24px;
+  }
+  .nav {
+    position: sticky;
+    top: 0;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 6px;
+    height: 100dvh;
+    padding: 28px 16px;
+    border-top: 0;
+    border-right: 1px solid #0022441a;
+  }
+  .nav__logo {
+    display: block;
+    margin: 0 12px 24px;
+    font-size: 28px;
+    color: var(--blue); /* a link would otherwise inherit the sidebar's text color */
+  }
+  .nav__item {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+  .nav__item:hover:not(.active) {
+    background: var(--sky);
+  }
+
+  .page {
+    padding-top: 32px;
+  }
+  .hero .title {
+    font-size: 38px;
+    line-height: 42px;
+  }
+  .hero__mascot {
+    width: 96px;
+    height: 96px;
+  }
+
+  .discover-controls {
+    flex-direction: row;
+    align-items: center;
+  }
+  .discover-controls .segmented {
+    width: 280px;
+  }
+  .page > .segmented {
+    width: 100%;
+    max-width: 420px;
+  }
+  .discover-controls .btn--bar {
+    width: auto;
+    min-width: 200px;
+  }
+
+  .login {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .login__art img {
+    width: min(420px, 80%);
+  }
+  .login__panel {
+    align-self: center;
+  }
+
+  .sheet-backdrop {
+    justify-content: flex-end;
+    align-items: stretch;
+  }
+  .sheet {
+    width: 440px;
+    max-height: none;
+    border-radius: 0;
+    animation-name: slide-left;
+  }
+  .sheet__grip {
+    display: none;
+  }
+
+  .detail__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+  .detail__media {
+    position: sticky;
+    top: 32px;
+  }
+  .detail__photo {
+    aspect-ratio: 4 / 3;
+  }
+
+  .sheet-backdrop--center {
+    justify-content: center;
+    align-items: center;
+  }
+  .sheet-backdrop--center .sheet {
+    width: 460px;
+    border-radius: 26px;
+    animation-name: slide-up;
+  }
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@media (min-width: 1100px) {
+  .feed-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------- Shared Save Lists ---------- */
+
+[aria-checked='true'] > .checkbox {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+.dot {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--warn-ink);
+  box-shadow: 0 0 0 2px var(--paper);
+}
+.nav__icon {
+  position: relative;
+}
+.nav__dot {
+  position: absolute;
+  top: -1px;
+  right: -3px;
+}
+
+/* Overlapping avatars: list members, or who saved a dish. */
+.avatar-stack {
+  display: inline-flex;
+  align-items: center;
+}
+.avatar-stack__one {
+  width: var(--size);
+  height: var(--size);
+  border: 2px solid var(--paper);
+}
+.avatar-stack__one + .avatar-stack__one {
+  margin-left: calc(var(--size) * -0.35);
+}
+.avatar-stack__more {
+  display: grid;
+  place-items: center;
+  min-width: var(--size);
+  height: var(--size);
+  margin-left: calc(var(--size) * -0.35);
+  padding: 0 4px;
+  border: 2px solid var(--paper);
+  border-radius: var(--radius-pill);
+  background: var(--sky);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+}
+.avatar--gone {
+  filter: grayscale(1);
+  opacity: 0.6;
+}
+
+/* Saved: the list picker, members, and invitations. */
+.list-picker__button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 16px var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.list-picker__name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list-menu {
+  position: fixed;
+  z-index: 61; /* above its scrim (.sort__scrim, 60), like the Sort menu */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 20px;
+  background: var(--paper);
+  box-shadow: 0 12px 32px #00224433;
+  animation: fade 0.15s;
+}
+.list-menu__group {
+  margin: 10px 10px 4px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.list-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.list-menu__item:hover,
+.list-menu__item:focus-visible {
+  background: var(--sky);
+}
+.list-menu__item[aria-current='true'] {
+  background: var(--yellow);
+}
+.list-menu__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--sky);
+  font-size: 15px;
+}
+.list-menu__text,
+.list-check__text,
+.person-row__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.list-menu__text strong,
+.list-check__text strong,
+.person-row__text strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.list-menu__text small,
+.list-check__text small,
+.person-row__text small {
+  color: var(--muted);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.list-menu__check {
+  color: var(--blue);
+}
+.list-menu__create {
+  margin-top: 6px;
+  border-top: 1px solid var(--line);
+  border-radius: 0 0 14px 14px;
+}
+
+.list-members {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.list-members__who {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 700 14px var(--font-body);
+  cursor: pointer;
+}
+.list-members__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+}
+.list-members__invite {
+  gap: 6px;
+  min-height: 44px;
+}
+.list-members__settings {
+  width: 44px;
+  height: 44px;
+  color: var(--ink);
+}
+.list-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.invite-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  background: var(--yellow);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+}
+.invite-card--many {
+  min-height: 56px;
+  justify-content: center;
+  cursor: pointer;
+}
+.invite-card__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.invite-card__head p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+.invite-card__actions,
+.ask-targets__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.invite-card__actions .btn,
+.ask-targets__actions .btn {
+  min-height: 44px;
+}
+.invite-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.ask-targets {
+  gap: 4px;
+}
+.ask-targets__actions {
+  margin-top: 8px;
+}
+
+/* A saved dish's "Saved by" line in a shared list. */
+.saved-row__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.saved-by {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  min-height: 32px;
+  margin: 2px 0 0 76px; /* under the dish name, past the photo */
+  padding: 0 8px 0 2px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--muted);
+  font: 700 12px var(--font-body);
+  cursor: pointer;
+}
+.saved-by:hover {
+  background: var(--sky);
+}
+
+/* Panels: Save to, Share, Create list, Saved by, Add from My Saves. */
+.sheet--lists {
+  max-height: 88dvh;
+  outline: none;
+}
+.list-checks,
+.people-list,
+.share__results {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.list-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.list-check.is-checked {
+  border-color: var(--blue);
+  background: var(--sky);
+}
+.list-check:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.list-check__icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--cream);
+  font-size: 15px;
+}
+.list-check--new {
+  border-style: dashed;
+}
+.list-check--new .list-check__icon {
+  background: var(--gold);
+  font-weight: 800;
+}
+.list-check__thumb {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  object-fit: cover;
+}
+.list-check__thumb--empty {
+  background: var(--sky);
+}
+.list-check__warn {
+  margin: 4px 4px 0;
+  color: var(--warn-ink);
+  font-size: 12.5px;
+}
+.list-check.is-shaking {
+  animation: shake 0.35s;
+}
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+.list-sheet__foot {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.list-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.person-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+.person-row--pick {
+  width: 100%;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 14px;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.person-row--pick:hover:not(:disabled) {
+  background: var(--sky);
+}
+.person-row--pick:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.person-row__action {
+  min-height: 44px;
+}
+
+.share__add {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.share__search-row,
+.share__link-row {
+  display: flex;
+  gap: 8px;
+}
+.share__search-row .input {
+  flex: 1;
+  min-width: 0;
+}
+.share__search-row .btn,
+.share__link-row .btn {
+  min-height: 48px;
+}
+.share__results {
+  padding: 6px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--paper);
+}
+.share__none {
+  padding: 10px;
+}
+.share__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 4px;
+}
+.share__chip-x {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.share__section {
+  margin-top: 22px;
+}
+.share__label {
+  margin: 0 0 8px;
+  font: 800 15px var(--font-body);
+}
+.confirm__field {
+  margin: -8px 0 16px;
+}
+
+/* "Saving to · <lists>  ›": above the card on Swipe, under Want it on Dish detail. Drawn like Saved's list
+   picker (.list-picker__button) with the same round badge (.list-menu__icon), since both pick lists. */
+.saving-to {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 10px;
+  padding: 0 14px 0 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.saving-to:hover {
+  background: var(--cream);
+}
+.saving-to__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+.saving-to__label {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.saving-to__names {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.saving-to__chevron {
+  flex: none;
+  color: var(--muted);
+}
+.want-block .saving-to {
+  margin-top: 8px;
+}
+.discover--targets .saving-to {
+  margin-top: 0; /* the page's own gap spaces it between Filters and the card */
+}
+/* Wide screens: above the card, as wide as it (.deck, 420px) and centered with it. */
+@media (min-width: 768px) {
+  .discover--targets .saving-to {
+    max-width: 420px;
+    margin: 0 auto;
+  }
+}
+.added-toast__undo {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  color: var(--gold);
+  font: 800 14px var(--font-body);
+  cursor: pointer;
+}
+.pick__saved-by {
+  font-size: 12px;
+}
+.login__join {
+  margin: 0 0 12px;
+}
+
+/* /join/:token */
+.join {
+  display: grid;
+  min-height: 80dvh;
+  place-items: center;
+}
+.join__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: min(100%, 380px);
+  padding: 24px 20px 20px;
+  border: 2px solid var(--gold);
+  border-radius: var(--radius-card);
+  background: var(--paper);
+  text-align: center;
+}
+.join__card p {
+  margin: 0;
+}
+.join__mascot {
+  width: 112px;
+  height: auto;
+}
+.join__name {
+  font: 700 22px var(--font-display);
+}
+.join__by {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.join__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+}
+.join__actions > :only-child {
+  grid-column: 1 / -1;
+}
+.join__actions .btn {
+  min-height: 48px;
+}
+
+@media (min-width: 768px) {
+  .sheet-backdrop--center .sheet--wide {
+    width: 540px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list-check.is-shaking {
+    animation: none;
+  }
+}
+
+/* Taller phones: the photo gives up a little height so Skip / Want it (and Saving to) stay on the first screen. */
+@media (max-width: 767px) {
+  .discover--compact .swipe-card__photo {
+    max-height: max(180px, calc(100dvh - 604px));
+  }
+  .discover--compact.discover--targets .swipe-card__photo {
+    max-height: max(180px, calc(100dvh - 654px));
+  }
+}
+
+/* Short phones (800px tall or less, on Swipe): no title, Swipe / Feed and Filters share one row, tighter
+   spacing, and a photo that gives up height first, so the card, Skip / View / Want it (and Saving to, for
+   people with a shared list) fit above the tab bar, down to a 320×515 screen with the browser's bars
+   showing. Tap targets stay at 44px or more (Saving to keeps 48px). */
+@media (max-height: 800px) and (max-width: 767px) {
+  .discover--compact {
+    --swipe-chrome: 330px; /* everything on the screen but the photo, measured at 320×515 */
+    gap: 10px;
+    padding-top: 10px;
+  }
+  .discover--compact.discover--targets {
+    --swipe-chrome: 388px; /* plus Saving to and its gap */
+  }
+  .discover--compact .hero,
+  .discover--compact .deck__hint,
+  .discover--compact .deck__keys {
+    display: none;
+  }
+  .discover--compact .discover-controls {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+  .discover--compact .discover-controls .segmented {
+    flex: 1;
+    min-width: 0;
+  }
+  .discover--compact .segmented button {
+    min-height: 36px;
+  }
+  .discover--compact .discover-controls .btn--bar {
+    flex: none;
+    width: auto;
+    min-height: 44px;
+    padding: 0 14px;
+  }
+  .discover--compact .discover-controls .btn--bar .push-right {
+    display: none;
+  }
+  .discover--compact .deck {
+    gap: 10px;
+  }
+  .discover--compact .swipe-card__photo {
+    aspect-ratio: auto;
+    height: max(88px, min(calc(100dvh - var(--swipe-chrome)), calc((100vw - 2 * var(--gutter)) * 0.75)));
+    max-height: none;
+  }
+  .discover--compact .swipe-card__body {
+    min-height: 0; /* the name is one line here, so every card is already one height */
+    gap: 2px;
+    padding: 10px 14px 12px;
+  }
+  .discover--compact .swipe-card .title {
+    display: block;
+    min-height: 0;
+    overflow: hidden;
+    font-size: 21px;
+    line-height: 26px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .discover--compact .swipe-card .meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .discover--compact .swipe-card .dish-card__foot {
+    align-items: center;
+    margin-top: 4px;
+  }
+  .discover--compact .deck__actions .btn {
+    min-height: 44px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+}
